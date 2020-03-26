@@ -2,12 +2,22 @@
   <q-layout view="lHh lpr lFf">
     <q-header elevated>
       <q-toolbar class="q-my-ms">
+        <q-btn
+          flat
+          dense
+          round
+          @click="clickDrawer"
+          aria-label="Menu"
+          icon="menu"
+        >
+        </q-btn>
         <q-toolbar-title color="red" @click="goHome" class="title">
           <strong>Ideas Matter</strong>
         </q-toolbar-title>
         <q-btn-toggle
           flat stretch
           toggle-color="white"
+          v-model="btnValToolbar"
           push
           :ripple="{ color: 'black' }"
           :options="[
@@ -79,6 +89,49 @@
       >
       <connexion/>
     </q-dialog>
+    <q-drawer
+      side='left'
+      v-model="leftDrawerOpen"
+      behavior="desktop"
+      bordered
+      content-class="bg-grey-2"
+    >
+    <q-list>
+      <q-item clickable tag="a" target="" @click="goTo('home?category=Technology')">
+        <q-item-section avatar>
+          <q-icon name="android" size="50px"/>
+        </q-item-section>
+          <q-item-section>
+            <div class="q-pa-md">
+                <q-item-label>Technology</q-item-label>
+                <q-item-label caption>All about technology</q-item-label>
+            </div>
+          </q-item-section>
+      </q-item>
+      <q-item clickable tag="a" target="" @click="goTo('home?category=Science')">
+        <q-item-section avatar>
+          <q-icon name="spa" size="50px"/>
+        </q-item-section>
+          <q-item-section>
+          <div class="q-pa-md">
+            <q-item-label>Science</q-item-label>
+            <q-item-label caption>All about science</q-item-label>
+          </div>
+          </q-item-section>
+      </q-item>
+      <q-item clickable tag="a" target="" @click="goTo('home?category=Space')">
+        <q-item-section avatar>
+          <q-icon name="public" size="50px"/>
+        </q-item-section>
+          <q-item-section>
+          <div class="q-pa-md">
+            <q-item-label>Space</q-item-label>
+            <q-item-label caption>All about space</q-item-label>
+          </div>
+          </q-item-section>
+      </q-item>
+  </q-list>
+    </q-drawer>
     <q-page-container>
       <router-view />
     </q-page-container>
@@ -88,6 +141,7 @@
 import { openURL } from 'quasar'
 import Inscription from 'src/components/Inscription/Inscription'
 import Connexion from 'src/components/Connexion/Connexion'
+import LayoutQList from './LayoutQList'
 export default {
   name: 'LayoutInconnected',
   components: {
@@ -96,16 +150,20 @@ export default {
   },
   data () {
     return {
+      btnValToolbar: false,
       showConnexion: false,
       maximizedToggle: true,
-      showInscDialog: false
+      showInscDialog: false,
+      leftDrawerOpen: false,
     }
   },
   computed: {
 
   },
   methods: {
-    openURL,
+    goTo (href) {
+      this.$router.push(href)
+    },
     onDialogHide () {
       // required to be emitted
       // when QDialog emits "hide" event
@@ -116,6 +174,19 @@ export default {
     },
     goHome () {
       this.$router.push('/home')
+    },
+    clickDrawer () {
+      this.leftDrawerOpen = !this.leftDrawerOpen
+    },
+  },
+  computed: {
+    leftDrawer: {
+      get () {
+        return this.leftDrawerOpen || this.mouseOverLeftHandSide
+      },
+      set (newv) {
+        this.leftDrawerOpen = newv
+      }
     }
   }
 }
