@@ -115,8 +115,8 @@
 
         <q-card-actions align="right" class="text-primary">
           <q-btn flat label="Cancel" color="red" v-close-popup />
-          <q-btn :disable="ideaName.length < 4 || categorie === null || editor.length < 100"  flat label="Publish" color = "green" @click="submitIdea" v-close-popup>
-            <q-tooltip v-if="ideaName.length < 4 || categorie === null || editor.length < 100">
+          <q-btn :disable="ideaName.length < 4 || ideaNameNotValide() || categorie === null || editor.length < 100"  flat label="Publish" color = "green" @click="submitIdea" v-close-popup>
+            <q-tooltip v-if="ideaName.length < 4 || ideaNameNotValide() || categorie === null || editor.length < 100">
               {{indiceSubmit}}
             </q-tooltip>
           </q-btn>
@@ -225,20 +225,39 @@ export default {
         "person": "Mohamed"
       });
       this.editorComment = "Type your comment here !";
+    },
+    ideaNameNotValide() {
+      for (let i = 0; i < this.ideaName.length; i++) {
+        if (this.ideaName.charAt(i).toLowerCase() > 'z' || this.ideaName.charAt(i).toLowerCase() < 'a') {
+          return true;
+        }
+      }
+      return false;
     }
   },
   computed: {
     indiceSubmit() {
-      if (this.ideaName.length < 4) {
-        return "the length of the idea name should be superior of 4 chars"
+      if (!this.ideaName) {
+        return "The idea name should not be empty"
       }
-      if (this.categorie === null) {
-        return "the categorie should not be empty";
+
+      if (this.ideaName.length < 4) {
+        return "The length of the idea name should be superior of 4 chars"
+      }
+      for (var i = 0; i < this.ideaName.length; i++) {
+        if (this.ideaName.charAt(i).toLowerCase() > 'z' || this.ideaName.charAt(i).toLowerCase() < 'a') {
+          return "The ideaName should contain only alphabetic letters";
+        }
+      }
+
+      if (this.categorie === null || !this.categorie) {
+        return "The categorie should not be empty";
       }
 
       if(this.editor.length < 100) {
         return "Your idea is not enought developped";
       }
+
     },
     currentCategory() {
       if (this.refresh || !this.refresh) {
