@@ -9,7 +9,7 @@
         direction="up"
         color="accent"
       >
-        <q-fab-action @click="publishDialog = true" color="black" icon="add">
+        <q-fab-action @click="publishDialog = true;triggerFocus()" color="black" icon="add">
           <q-tooltip anchor="center left" self="center right" :offset="[10, 10]">
             <strong>Publish an idea</strong>
             (<q-icon name="wb_incandescent"/>)
@@ -18,6 +18,7 @@
         <!-- <q-fab-action @click="onClick" color="primary" icon="mail" /> -->
       </q-fab>
     </q-page-sticky>
+    <!-- ideas-display -->
     <div class="flex row">
       <div class="col-md-11">
         <div v-for="link in ideas" :key="link.id">
@@ -38,19 +39,10 @@
                 <font size="3" color="grey"><strong>Feedbacks</strong></font>
               </q-item-section>
               <q-card-section class="q-pa-md">
-                <div v-if="comments.length > 0" v-for="comment in comments" :key="link.id">
-                  <q-card dark bordered class="bg-grey-9 my-card">
-                      <q-avatar class="q-ma-lg">
-                        <img src="https://cdn.quasar.dev/img/boy-avatar.png">
-                        <q-badge class="q-mb-xl" color="blue" floating>{{comment.person}}</q-badge>
-                      </q-avatar>
-                      &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-                      {{comment.content}}
-                  </q-card>
-                  <br>
-                </div>
+                <ideas-comments :comments="comments"/>
               </q-card-section>
               <q-card-actions align="right">
+                <q-btn label="Support the idea" color="light-blue" size="md" :disable="!userIsLogged" @click="donationDialog = true"/>
                 <q-btn flat round color="grey" icon="thumb_down" @click="nbLike = nbLike - 1"/>
                 <q-btn flat round color="grey" icon="thumb_up"  @click="nbLike = nbLike + 1">
                   <q-badge v-if="nbLike === 0" color="blue" floating>{{nbLike}}</q-badge>
@@ -63,10 +55,14 @@
           </div>
         </div>
       </div>
+
       <div class="col-md-1">
         &nbsp;
       </div>
     </div>
+    <!-- End ideas-display -->
+
+    <!-- idea-publisher -->
     <q-dialog
       v-model="publishDialog"
     >
@@ -84,7 +80,7 @@
         <q-card-section class="q-pt-none">
           <div class="flex row">
             <div class="col-md-6 col-sm-12 col-xs-12 col-lg-4 col-xl-4">
-              <q-input standout="bg-teal text-white" v-model="ideaName" label="Idea name" />
+              <q-input ref="ideaName" standout="bg-teal text-white" v-model="ideaName" label="Idea name" />
             </div>
             <div class="col-md-6 col-lg-8 col-xl-8">
               &nbsp;
@@ -124,45 +120,26 @@
 
       </q-card>
     </q-dialog>
+    <!-- fin-idea-publisher -->
 
-    <!-- dialog feedback -->
-    <q-dialog
-      v-model="commentDialog"
-    >
-      <q-card style="width: 700px; max-width: 80vw;">
-        <q-card-section>
-          <div class="text-h6">Your feedBack</div>
-        </q-card-section>
-        <q-separator />
+    <comments-creator :commentDialog="commentDialog" @submited="submitComment"/>
 
-        <q-card-section class="q-pt-none">
-          <q-editor
-            v-model="editorComment"
-          />
-        </q-card-section>
-
-        <q-card-actions align="right" class="text-primary">
-          <q-btn flat label="Cancel" color="red" v-close-popup />
-          <q-btn :disable="editorComment.length < 10 || this.editorComment === 'Type your comment here !'"  flat label="Validate" color = "green" @click="submitComment" v-close-popup>
-            <q-tooltip v-if="editorComment.length < 10">
-              You need to develop more you comment :)
-            </q-tooltip>
-          </q-btn>
-
-        </q-card-actions>
-      </q-card>
-    </q-dialog>
+    <donation :donationDialog="donationDialogC" @submitDonation="submitDonation"/>
 
   </q-page>
 </template>
 <script>
 
 // import api from '../../api/api'
-
+import ideasComments from '../Comments/comments'
+import commentsCreator from '../Comments/commentCreator'
+import donation from '../Donation/donate'
 export default {
   name: 'Landing',
   components: {
-
+    ideasComments,
+    commentsCreator,
+    donation
   },
   // props: ['shortcuts'],
 
@@ -181,14 +158,37 @@ export default {
       ideas: [],
       id: 0,
       nbLike: 0,
+      refresh : false,
+      userIsLogged: true,
       commentDialog: false,
-      editorComment: "Type your comment here !",
       comments: [],
-      refresh : false
+      donationDialog: false
     }
   },
 
   methods: {
+    submitDonation(payload) {
+      console.log('donation submited successfuly');
+      this.donationDialog = false;
+    },
+    triggerFocus() {
+      let vm = this;
+      setTimeout(function () {
+        vm.$refs.ideaName.focus();
+      }, 100);
+    },
+    submitComment(payload) {
+      console.log('payload =', payload);
+      if (payload) {
+        this.comments.push({
+          "id": this.id,
+          "content": payload,
+          "person": "Mohamed"
+        });
+        this.commentDialog = false;
+        this.id += 1 ;
+      }
+    },
     submitIdea() {
       this.ideas.push({
         "id": this.id,
@@ -217,14 +217,6 @@ export default {
     },
     finishedApiLoading () {
       this.internalLoading = false
-    },
-    submitComment() {
-      this.comments.push({
-        "id": this.id,
-        "content": this.editorComment,
-        "person": "Mohamed"
-      });
-      this.editorComment = "Type your comment here !";
     },
     ideaNameNotValide() {
       for (let i = 0; i < this.ideaName.length; i++) {
@@ -281,6 +273,10 @@ export default {
       if (this.currentCategory === 'Science') {
         return 'spa';
       }
+    },
+    donationDialogC() {
+      console.log('dans le donnation dialog computed', this.donationDialog);
+      return this.donationDialog;
     }
   },
   mounted() {
