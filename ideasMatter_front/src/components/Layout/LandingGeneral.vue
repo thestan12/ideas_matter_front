@@ -130,7 +130,7 @@
 </template>
 <script>
 
-// import api from '../../api/api'
+import api from '../../api/api'
 import ideasComments from '../Comments/comments'
 import commentsCreator from '../Comments/commentCreator'
 import donation from '../Donation/donate'
@@ -196,6 +196,13 @@ export default {
         "name": this.ideaName,
         "category": this.categorie
       });
+
+      api.sendPost(this.categorie, this.editor).then(response => {
+        console.log("response =", response);
+      }).catch((err) => {
+        console.warn("error while sending the post to the server ", err);
+      });
+
       this.editor="";
       this.ideaName="";
       this.categorie="";
@@ -204,7 +211,8 @@ export default {
         color: 'green-4',
         textColor: 'white',
         icon: 'done'
-      })
+      });
+
     },
     onClick () {
   // console.log('Clicked on a fab action')

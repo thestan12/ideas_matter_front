@@ -32,10 +32,41 @@ class Api {
     Loading.hide();
   }
 
-  submitCLientFeed(productId, rate) {
-    console.log('submitting rate  :', rate);
-    return window.axios.post(`/products/${productId}/rate`, rate);
+  sendPost(subject, content) {
+    return window.axios.post('/forum/post/creator', {
+      subject: subject,
+      content: content
+    });
   }
+
+  getPosts(category) {
+    return window.axios.get('/forum/post/creator', {
+      subject: subject,
+      content: content
+    });
+  }
+
+  sendComment(idPost) {
+    return window.axios.get('/forum/post/creator', {
+      subject: subject,
+      content: content
+    });
+  }
+
+  getComments(idPost) {
+    return window.axios.get('/forum/post/creator', {
+      subject: subject,
+      content: content
+    });
+  }
+
+  sendLike(idComment) {
+    return window.axios.get('/forum/post/creator', {
+      subject: subject,
+      content: content
+    });
+  }
+
 }
 
 export default new Api();
