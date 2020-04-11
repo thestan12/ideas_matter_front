@@ -40,31 +40,21 @@ class Api {
   }
 
   getPosts(category) {
-    return window.axios.get('/forum/post/creator', {
-      subject: subject,
-      content: content
-    });
+    return window.axios.get('/forum/posts');
   }
 
-  sendComment(idPost) {
-    return window.axios.get('/forum/post/creator', {
-      subject: subject,
+  commentPost(idPost, content) {
+    return window.axios.put(`/forum/post/${idPost}/comment/serge`, {
       content: content
     });
   }
 
   getComments(idPost) {
-    return window.axios.get('/forum/post/creator', {
-      subject: subject,
-      content: content
-    });
+    return window.axios.get(`/forum/post/${idPost}/comments`);
   }
 
-  sendLike(idComment) {
-    return window.axios.get('/forum/post/creator', {
-      subject: subject,
-      content: content
-    });
+  likePost(idPost) {
+    return window.axios.put(`/forum/post/${idPost}/like`);
   }
 
 }

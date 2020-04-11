@@ -1,7 +1,7 @@
 <template>
   <q-page>
     <q-chip size="lg" clickable class="q-ma-md" color="secondary" text-color="white" :icon="currentCategoryIcon">
-      {{currentCategory}}
+      {{currentCategoryLabel}}
     </q-chip>
     <q-page-sticky position="bottom-right" :offset="[18, 18]">
       <q-fab
@@ -146,6 +146,7 @@ export default {
   data () {
     return {
       categorie: null,
+      currentCategory: "All Categories",
       fabLeft: true,
       fabCenter: true,
       fabRight: true,
@@ -190,15 +191,15 @@ export default {
       }
     },
     submitIdea() {
-      this.ideas.push({
-        "id": this.id,
-        "content": this.editor,
-        "name": this.ideaName,
-        "category": this.categorie
-      });
-
+      let vm = this;
       api.sendPost(this.categorie, this.editor).then(response => {
         console.log("response =", response);
+        vm.ideas.push({
+          "id": response.data.idPost,
+          "content": response.data.content,
+          "name": response.data.subject,
+          "category": "none"
+        });
       }).catch((err) => {
         console.warn("error while sending the post to the server ", err);
       });
@@ -228,7 +229,7 @@ export default {
     },
     ideaNameNotValide() {
       for (let i = 0; i < this.ideaName.length; i++) {
-        if (this.ideaName.charAt(i).toLowerCase() > 'z' || this.ideaName.charAt(i).toLowerCase() < 'a') {
+        if ((this.ideaName.charAt(i).toLowerCase() > 'z' || this.ideaName.charAt(i).toLowerCase() < 'a')  && (this.ideaName.charAt(i) !== ' ')) {
           return true;
         }
       }
@@ -245,7 +246,7 @@ export default {
         return "The length of the idea name should be superior of 4 chars"
       }
       for (var i = 0; i < this.ideaName.length; i++) {
-        if (this.ideaName.charAt(i).toLowerCase() > 'z' || this.ideaName.charAt(i).toLowerCase() < 'a') {
+        if ((this.ideaName.charAt(i).toLowerCase() > 'z' || this.ideaName.charAt(i).toLowerCase() < 'a') && (this.ideaName.charAt(i) !== ' ')) {
           return "The ideaName should contain only alphabetic letters";
         }
       }
@@ -259,12 +260,8 @@ export default {
       }
 
     },
-    currentCategory() {
-      if (this.refresh || !this.refresh) {
-        console.log('router =', this.$router);
-        return (this.$router.history.current.query && this.$router.history.current.query.category) ? this.$router.history.current.query.category : '';
-      }
-      return '';
+    currentCategoryLabel() {
+      return this.currentCategory;
     },
     currentCategoryIcon() {
       console.log('res =', this.currentCategory);
@@ -295,9 +292,35 @@ export default {
     //   "category": "none"
     // })
   },
+  created() {
+    let vm = this;
+    api.loading();
+    api.getPosts().then(response => {
+      console.log('response =', response);
+      api.finishedLoading();
+      response.data.data.forEach((div) => {
+        vm.ideas.push({
+          "id": div.id,
+          "content": div.content,
+          "name": div.subject,
+          "category": "none"
+        });
+      });
+    }).catch((err) => {
+      console.warn("can't fetch posts from dataBase ", err);
+      api.finishedLoading();
+    });
+    setTimeout(function () {
+      api.finishedLoading();
+    }, 10000);
+  },
   watch: {
     $route(to, from) {
-      this.refresh = ! this.refresh;
+      if (this.$router.history.current.query && this.$router.history.current.query.category) {
+        this.currentCategory = this.$router.history.current.query.category;
+      } else {
+        this.currentCategory = "All Categories";
+      }
       this.ideas = []
     }
   }
