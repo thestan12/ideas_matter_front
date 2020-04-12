@@ -134,7 +134,7 @@
 import { openURL } from 'quasar'
 import Password from 'vue-password-strength-meter'
 import FormCheck from './FormCheck'
-import api from '../../api/api'
+import api from '../../services/api'
 export default {
   name: 'Inscription',
   components: {

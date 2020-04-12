@@ -12,7 +12,6 @@
 </template>
 <script>
 
-// import api from '../api/api'
 export default {
   name: 'layoutConnected',
   components: {

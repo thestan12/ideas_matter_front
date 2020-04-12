@@ -42,7 +42,7 @@
                   style="border-radius: 30px"
                   icon="comment"
                   label="Feedbacks"
-                  header-class="bg-primary text-white"
+                  header-class="bg-secondary text-white"
                   expand-icon-class="text-white"
                 >
                   <ideas-comments :comments="idea.comments"/>
@@ -142,7 +142,7 @@
 </template>
 <script>
 
-import api from '../../api/api'
+import api from '../../services/api'
 import ideasComments from '../Comments/comments'
 import commentsCreator from '../Comments/commentCreator'
 import donation from '../Donation/donate'
@@ -213,7 +213,7 @@ export default {
         vm.commentDialog = false;
         vm.$q.notify({
           message: 'Your feedBack has been published',
-          color: 'green-4',
+          color: 'green-7',
           textColor: 'white',
           icon: 'done'
         });
@@ -238,7 +238,7 @@ export default {
       this.categorie="";
       this.$q.notify({
         message: 'Your idea has been published',
-        color: 'green-4',
+        color: 'green-7',
         textColor: 'white',
         icon: 'done'
       });
@@ -336,11 +336,16 @@ export default {
           "comments": div.comments,
           "likes": div.likes
         });
-        console.log('vmIdeas =', vm.ideas);
       });
     }).catch((err) => {
       console.warn("can't fetch posts from dataBase ", err);
       api.finishedLoading();
+      this.$q.notify({
+        message: 'An error has occurred, can\'t connect to the backEnd side',
+        color: 'red-7',
+        textColor: 'white',
+        icon: 'warning'
+      });
     });
     setTimeout(function () {
       api.finishedLoading();
@@ -353,7 +358,7 @@ export default {
       } else {
         this.currentCategory = "All Categories";
       }
-      this.ideas = []
+      // this.ideas = []
     }
   }
 }
