@@ -61,7 +61,7 @@ module.exports = function (ctx) {
           API: JSON.stringify('http://localhost:8080')
         }
         : { // and on build (production):
-          API: JSON.stringify('https://jeeback.azurewebsites.net/')
+          API: JSON.stringify('https://jeeback.azurewebsites.net')
         },
       // rtl: false, // https://quasar.dev/options/rtl-support
       // showProgress: false,
