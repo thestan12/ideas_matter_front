@@ -57,7 +57,7 @@
                   <q-badge v-if="idea.likes > 0" color="green" floating>{{idea.likes}}</q-badge>
                   <q-badge v-if="idea.likes < 0" color="red" floating>{{idea.likes}}</q-badge>
                 </q-btn>
-                <q-btn flat round color="primary" icon="add_comment" @click="commentDialog = true; currentIdeaId = idea.id">
+                <q-btn flat round color="white" icon="add_comment" @click="commentDialog = true; currentIdeaId = idea.id">
                   <q-tooltip>
                     Add a comment
                   </q-tooltip>
