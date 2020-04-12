@@ -39,7 +39,13 @@ export default {
   },
   methods: {
     submitComment() {
-      this.$emit('submited', this.editorComment);
+      let finalComment = "";
+      let i =0;
+      for (i ; i < this.editorComment.length -4 ; i++) {
+        finalComment += this.editorComment.charAt(i);
+      }
+      this.$emit('submited', finalComment);
+      console.log('finalComment =', finalComment);
       this.editorComment = "Type your comment here !";
     },
   },

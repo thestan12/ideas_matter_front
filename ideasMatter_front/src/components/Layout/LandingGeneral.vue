@@ -21,35 +21,47 @@
     <!-- ideas-display -->
     <div class="flex row">
       <div class="col-md-11">
-        <div v-for="link in ideas" :key="link.id">
+        <div v-for="idea in ideas" :key="idea.id">
           <div class="col-xl-2 col-md-4 col-xs-5 q-ml-lg q-pa-xl">
-            <q-card>
+            <q-card       class=" text-white"
+      style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">
               <q-item-section class="q-pa-md">
-                <font size="5"><strong>{{link.name}}</strong></font>
+                <font size="5"><strong>{{idea.name}}</strong></font>
               </q-item-section>
               <q-separator />
               <q-card-section class="q-pa-md">
                 <p>
-                  {{link.content}}
+                  {{idea.content}}
                 </p>
               </q-card-section>
               <br><br>
               <q-separator/>
               <q-item-section class="q-pa-md">
-                <font size="3" color="grey"><strong>Feedbacks</strong></font>
+                <q-expansion-item
+                  class="shadow-1 overflow-hidden"
+                  style="border-radius: 30px"
+                  icon="comment"
+                  label="Feedbacks"
+                  header-class="bg-primary text-white"
+                  expand-icon-class="text-white"
+                >
+                  <ideas-comments :comments="idea.comments"/>
+               </q-expansion-item>
               </q-item-section>
-              <q-card-section class="q-pa-md">
-                <ideas-comments :comments="comments"/>
-              </q-card-section>
+
               <q-card-actions align="right">
                 <q-btn label="Support the idea" color="light-blue" size="md" :disable="!userIsLogged" @click="donationDialog = true"/>
-                <q-btn flat round color="grey" icon="thumb_down" @click="nbLike = nbLike - 1"/>
-                <q-btn flat round color="grey" icon="thumb_up"  @click="nbLike = nbLike + 1">
-                  <q-badge v-if="nbLike === 0" color="blue" floating>{{nbLike}}</q-badge>
-                  <q-badge v-if="nbLike > 0" color="green" floating>{{nbLike}}</q-badge>
-                  <q-badge v-if="nbLike < 0" color="red" floating>{{nbLike}}</q-badge>
+                <q-btn flat round color="grey" icon="thumb_down" @click="dislikePost(idea.id)"/>
+                <q-btn flat round color="grey" icon="thumb_up"  @click="likePost(idea.id)">
+                  <q-badge v-if="idea.likes === 0" color="blue" floating>{{idea.likes}}</q-badge>
+                  <q-badge v-if="idea.likes > 0" color="green" floating>{{idea.likes}}</q-badge>
+                  <q-badge v-if="idea.likes < 0" color="red" floating>{{idea.likes}}</q-badge>
                 </q-btn>
-                <q-btn flat round color="primary" icon="message" @click="commentDialog = true"/>
+                <q-btn flat round color="primary" icon="add_comment" @click="commentDialog = true; currentIdeaId = idea.id">
+                  <q-tooltip>
+                    Add a comment
+                  </q-tooltip>
+                </q-btn>
               </q-card-actions>
             </q-card>
           </div>
@@ -145,11 +157,9 @@ export default {
 
   data () {
     return {
+      currentIdeaId: -1, // which idea the user gonna comment
       categorie: null,
       currentCategory: "All Categories",
-      fabLeft: true,
-      fabCenter: true,
-      fabRight: true,
       publishDialog: false,
       ideaName: "",
       categoriesOptions: [
@@ -159,7 +169,6 @@ export default {
       ideas: [],
       id: 0,
       nbLike: 0,
-      refresh : false,
       userIsLogged: true,
       commentDialog: false,
       comments: [],
@@ -168,6 +177,18 @@ export default {
   },
 
   methods: {
+    dislikePost(id) {
+
+    },
+    likePost(id) {
+      let vm = this;
+      api.likePost(id).then(response => {
+        console.log('response =', response);
+        vm.ideas.find(div => div.id === id).likes = vm.ideas.find(div => div.id === id).likes + 1;
+      }).catch((err) => {
+        console.warn("error while liking post with id =", id, ", the error is  ",err);
+      })
+    },
     submitDonation(payload) {
       console.log('donation submited successfuly');
       this.donationDialog = false;
@@ -179,15 +200,23 @@ export default {
       }, 100);
     },
     submitComment(payload) {
-      console.log('payload =', payload);
-      if (payload) {
-        this.comments.push({
-          "id": this.id,
-          "content": payload,
-          "person": "Mohamed"
+      console.log('payload =', payload,"     currentIdeaId =", this.currentIdeaId);
+      let vm = this;
+      if (payload && vm.currentIdeaId !== -1) {
+        api.commentPost(vm.currentIdeaId, payload).then(response => {
+          console.log('response =', response);
+          vm.ideas.find(div => div.id === vm.currentIdeaId).comments = response.data.comments;
+        }).catch((err) => {
+          console.warn('err =', err);
         });
-        this.commentDialog = false;
-        this.id += 1 ;
+
+        vm.commentDialog = false;
+        vm.$q.notify({
+          message: 'Your feedBack has been published',
+          color: 'green-4',
+          textColor: 'white',
+          icon: 'done'
+        });
       }
     },
     submitIdea() {
@@ -298,13 +327,16 @@ export default {
     api.getPosts().then(response => {
       console.log('response =', response);
       api.finishedLoading();
-      response.data.data.forEach((div) => {
+      response.data.forEach((div) => {
         vm.ideas.push({
-          "id": div.id,
+          "id": div.idPost,
           "content": div.content,
           "name": div.subject,
-          "category": "none"
+          "category": "none",
+          "comments": div.comments,
+          "likes": div.likes
         });
+        console.log('vmIdeas =', vm.ideas);
       });
     }).catch((err) => {
       console.warn("can't fetch posts from dataBase ", err);
