@@ -2,7 +2,7 @@
   "name": "idead_matter_front",
   "version": "0.0.1",
   "description": "A Quasar Framework app",
-  "productName": "Quasar App",
+  "productName": "Ideas matter",
   "cordovaId": "org.cordova.quasar.app",
   "capacitorId": "",
   "author": "Souissi Mohamed <mohaxoy98@gmail.com>",

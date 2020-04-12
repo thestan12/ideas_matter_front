@@ -41,7 +41,7 @@
                   class="shadow-1 overflow-hidden"
                   style="border-radius: 30px"
                   icon="comment"
-                  label="Feedbacks"
+                  :label="'Feedbacks <' + idea.comments.length+'>'"
                   header-class="bg-secondary text-white"
                   expand-icon-class="text-white"
                 >
