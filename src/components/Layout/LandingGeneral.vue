@@ -317,7 +317,7 @@ export default {
   },
   created() {
     let vm = this;
-    api.loading();
+    // api.loading();
     api.getPosts().then(response => {
       response.data.forEach((div) => {
         vm.ideas.push({
@@ -329,10 +329,10 @@ export default {
           "likes": div.likes
         });
       });
-      api.finishedLoading();
+      // api.finishedLoading();
     }).catch((err) => {
       console.warn("can't fetch posts from dataBase ", err);
-      api.finishedLoading();
+      // api.finishedLoading();
       this.$q.notify({
         message: 'An error has occurred, can\'t connect to the backEnd side',
         color: 'red-7',

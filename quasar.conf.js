@@ -63,7 +63,6 @@ module.exports = function (ctx) {
         : { // and on build (production):
           API: JSON.stringify('https://jeeback.azurewebsites.net')
         },
-        distDir: ctx.mode.spa ? 'public' : null,
       // rtl: false, // https://quasar.dev/options/rtl-support
       // showProgress: false,
       // gzip: true,
