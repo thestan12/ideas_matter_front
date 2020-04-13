@@ -319,8 +319,6 @@ export default {
     let vm = this;
     api.loading();
     api.getPosts().then(response => {
-      console.log('response =', response);
-      api.finishedLoading();
       response.data.forEach((div) => {
         vm.ideas.push({
           "id": div.idPost,
