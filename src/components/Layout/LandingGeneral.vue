@@ -250,12 +250,6 @@ export default {
     viewMyIdeas() {
 
     },
-    apiLoading () {
-      this.internalLoading = true
-    },
-    finishedApiLoading () {
-      this.internalLoading = false
-    },
     ideaNameNotValide() {
       for (let i = 0; i < this.ideaName.length; i++) {
         if ((this.ideaName.charAt(i).toLowerCase() > 'z' || this.ideaName.charAt(i).toLowerCase() < 'a')  && (this.ideaName.charAt(i) !== ' ')) {
@@ -337,6 +331,7 @@ export default {
           "likes": div.likes
         });
       });
+      api.finishedLoading();
     }).catch((err) => {
       console.warn("can't fetch posts from dataBase ", err);
       api.finishedLoading();
@@ -347,9 +342,6 @@ export default {
         icon: 'warning'
       });
     });
-    setTimeout(function () {
-      api.finishedLoading();
-    }, 10000);
   },
   watch: {
     $route(to, from) {
