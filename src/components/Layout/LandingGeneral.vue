@@ -316,40 +316,40 @@ export default {
     // })
   },
   created() {
-    // let vm = this;
-    // // api.loading();
-    // api.getPosts().then(response => {
-    //   response.data.forEach((div) => {
-    //     vm.ideas.push({
-    //       "id": div.idPost,
-    //       "content": div.content,
-    //       "name": div.subject,
-    //       "category": "none",
-    //       "comments": div.comments,
-    //       "likes": div.likes
-    //     });
-    //   });
-    //   // api.finishedLoading();
-    // }).catch((err) => {
-    //   console.warn("can't fetch posts from dataBase ", err);
-    //   // api.finishedLoading();
-    //   this.$q.notify({
-    //     message: 'An error has occurred, can\'t connect to the backEnd side',
-    //     color: 'red-7',
-    //     textColor: 'white',
-    //     icon: 'warning'
-    //   });
-    // });
+    let vm = this;
+    // api.loading();
+    api.getPosts().then(response => {
+      response.data.forEach((div) => {
+        vm.ideas.push({
+          "id": div.idPost,
+          "content": div.content,
+          "name": div.subject,
+          "category": "none",
+          "comments": div.comments,
+          "likes": div.likes
+        });
+      });
+      // api.finishedLoading();
+    }).catch((err) => {
+      console.warn("can't fetch posts from dataBase ", err);
+      // api.finishedLoading();
+      this.$q.notify({
+        message: 'An error has occurred, can\'t connect to the backEnd side',
+        color: 'red-7',
+        textColor: 'white',
+        icon: 'warning'
+      });
+    });
   },
   watch: {
-    // $route(to, from) {
-    //   if (this.$router.history.current.query && this.$router.history.current.query.category) {
-    //     this.currentCategory = this.$router.history.current.query.category;
-    //   } else {
-    //     this.currentCategory = "All Categories";
-    //   }
-    //   // this.ideas = []
-    // }
+    $route(to, from) {
+      if (this.$router.history.current.query && this.$router.history.current.query.category) {
+        this.currentCategory = this.$router.history.current.query.category;
+      } else {
+        this.currentCategory = "All Categories";
+      }
+      // this.ideas = []
+    }
   }
 }
 </script>
