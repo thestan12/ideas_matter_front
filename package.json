@@ -40,5 +40,9 @@
   ],
   "resolutions": {
     "@babel/parser": "7.7.5"
-  }
+  },
+  "scripts": {
+      "build": "quasar build",
+      "deploy": "now"
+    }
 }
