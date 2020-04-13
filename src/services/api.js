@@ -28,7 +28,7 @@ class Api {
   }
 
   finishedLoading() {
-    console.log('finish loading');
+    // console.log('finish loading');
     Loading.hide();
   }
 
