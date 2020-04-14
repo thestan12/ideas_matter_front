@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="comments.length > 0" v-for="comment in comments" :key="comment.content">
+    <!-- <div @load="log("pokemon")" v-if="comments.length > 0" v-for="comment in comments" :key="commentIndexForColor">
       <q-card dark bordered :class="commentIndexForColor % 2 === 0 ? 'bg-grey-9' : 'bg-grey-7'">
           <div class="flex row col-12">
             <div class="col-md-1 col-xs-2 col-sm-2 col-lg-1 col-xl-1">
@@ -16,7 +16,7 @@
           </div>
       </q-card>
       <br>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -26,6 +26,7 @@ export default {
   props:["comments"],
   data() {
     return {
+      log: console.log,
       commentIndexForColor: 0
     }
   },

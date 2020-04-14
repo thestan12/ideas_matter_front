@@ -319,7 +319,9 @@ export default {
     let vm = this;
     // api.loading();
     api.getPosts().then(response => {
-      response.data.forEach((div) => {
+      console.log('response =', response);
+      for(let div of response.data) {
+        console.log('we are in the loop');
         vm.ideas.push({
           "id": div.idPost,
           "content": div.content,
@@ -328,7 +330,7 @@ export default {
           "comments": div.comments,
           "likes": div.likes
         });
-      });
+      }
       // api.finishedLoading();
     }).catch((err) => {
       console.warn("can't fetch posts from dataBase ", err);

@@ -1,11 +1,16 @@
-const
-  express = require('express'),
-  serveStatic = require('serve-static'),
-  history = require('connect-history-api-fallback'),
-  port = process.env.PORT || 5000
+//Install express server
+const express = require('express');
+const path = require('path');
 
-const app = express()
+const app = express();
 
-app.use(history())
-app.use(serveStatic(__dirname + '/dist/spa'))
-app.listen(port)
+// Serve only the static files form the dist directory
+app.use(express.static(__dirname + '/public'));
+
+app.get('/*', function (req, res) {
+
+  res.sendFile(path.join(__dirname + '/public/index.html'));
+});
+
+// Start the app by listening on the default Heroku port
+app.listen(process.env.PORT || 5000);

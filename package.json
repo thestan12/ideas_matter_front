@@ -8,12 +8,14 @@
   "author": "Souissi Mohamed <mohaxoy98@gmail.com>",
   "private": true,
   "scripts": {
-    "lint": "eslint --ext .js,.vue src",
-    "test": "echo \"No test specified\" && exit 0"
+    "build": "quasar build",
+    "start": "node index.js"
   },
   "dependencies": {
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.1",
+    "express": "^4.17.1",
+    "path": "^0.12.7",
     "quasar": "^1.0.0",
     "vue-password-strength-meter": "^1.7.1",
     "zxcvbn": "^4.4.2"
@@ -40,10 +42,5 @@
   ],
   "resolutions": {
     "@babel/parser": "7.7.5"
-  },
-  "scripts": {
-    "build": "quasar build",
-    "start": "node server.js",
-    "deploy": "now"
   }
 }
