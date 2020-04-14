@@ -40,5 +40,10 @@
   ],
   "resolutions": {
     "@babel/parser": "7.7.5"
+  },
+  "scripts": {
+    "build": "quasar build",
+    "start": "node server.js",
+    "deploy": "now"
   }
 }
