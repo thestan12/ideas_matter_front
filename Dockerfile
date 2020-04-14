@@ -20,8 +20,6 @@ COPY . /app
 
 RUN quasar build
 
-RUN node server.js
-
 ############
 ### prod ###
 ############
