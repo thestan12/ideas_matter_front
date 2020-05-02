@@ -57,6 +57,10 @@ class Api {
     return window.axios.put(`/forum/post/${idPost}/like`);
   }
 
+  dislikePost(idPost) {
+    return window.axios.put(`/forum/post/${idPost}/dislike`);
+  }
+
 }
 
 export default new Api();

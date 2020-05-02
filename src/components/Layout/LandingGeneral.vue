@@ -178,12 +178,18 @@ export default {
 
   methods: {
     dislikePost(id) {
-
+      let vm = this;
+      api.dislikePost(id).then(response => {
+        console.log('response disliking post=', response);
+        vm.ideas.find(div => div.id === id).likes = vm.ideas.find(div => div.id === id).likes - 1;
+      }).catch((err) => {
+        console.warn("error while liking post with id =", id, ", the error is  ",err);
+      })
     },
     likePost(id) {
       let vm = this;
       api.likePost(id).then(response => {
-        console.log('response =', response);
+        console.log('response liking post=', response);
         vm.ideas.find(div => div.id === id).likes = vm.ideas.find(div => div.id === id).likes + 1;
       }).catch((err) => {
         console.warn("error while liking post with id =", id, ", the error is  ",err);
@@ -321,7 +327,6 @@ export default {
     api.getPosts().then(response => {
       console.log('response =', response);
       for(let div of response.data) {
-        console.log('we are in the loop');
         vm.ideas.push({
           "id": div.idPost,
           "content": div.content,
