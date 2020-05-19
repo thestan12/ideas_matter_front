@@ -6,20 +6,6 @@ export default class StorageService {
     return process.env.API;
   }
 
-  static setToken(token) {
-    storage.setItem('token', token);
-  }
-
-  static getToken() {
-    return storage.getItem('token');
-  }
-
-  static removeToken() {
-    storage.removeItem('token');
-    removeUser();
-    removeConnection();
-  }
-
   static setUser(user) {
     console.log('setting user');
     storage.setItem('user', JSON.stringify(user));
@@ -35,19 +21,31 @@ export default class StorageService {
     storage.removeItem('user');
   }
 
+
+  static setToken(token) {
+    storage.setItem('token', token);
+  }
+
+  static getToken() {
+    return storage.getItem('token');
+  }
+
+  static removeToken() {
+    storage.removeItem('token');
+    this.removeUser();
+    this.removeConnection();
+  }
+
   static setFirstConnection(statut) {
     storage.setItem('connection', statut);
   }
 
   static getFirstConnection() {
-    let connection = storage.getItem('connection');
-    return connection;
+    return storage.getItem('connection');
   }
 
   static removeConnection () {
     storage.removeItem('connection');
   }
-
-
 
 }

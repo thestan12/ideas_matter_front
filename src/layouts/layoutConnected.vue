@@ -16,6 +16,17 @@
         </q-toolbar-title>
         <q-space/>
         <q-btn
+           label="My ideas"
+           icon="wb_incandescent"
+           flat dense
+           @click="goToMyIdeas"
+         >
+         <q-tooltip>
+           See all of your published ideas
+         </q-tooltip>
+       </q-btn>
+         &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
+        <q-btn
           label="Profile"
           icon="perm_identity"
           flat dense
@@ -119,6 +130,9 @@ export default {
     goTo (href) {
       console.log('dans le goTo');
       this.$router.push(href,  () => { })
+    },
+    goToMyIdeas() {
+      this.$router.push("/my-ideas");
     }
   }
 }

@@ -2,6 +2,7 @@ const LayoutInconnected = () => import('layouts/layoutInConnected')
 const LayoutConnected = () => import('layouts/layoutConnected')
 const NotFound = () => import('pages/Error404.vue')
 const Home = () => import('pages/Home')
+const UserIdeas = () => import('pages/UserIdeas');
 const About = () => import('pages/about')
 
 import '../../axios'
@@ -18,6 +19,13 @@ const RoutesConnected = [
         path: '/home',
         components: {
           default: Home
+        }
+      },
+      {
+        name: 'UserIdeas',
+        path: '/my-ideas',
+        components: {
+          default: UserIdeas
         }
       },
       {

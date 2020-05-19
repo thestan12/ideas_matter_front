@@ -1,9 +1,11 @@
 import { Loading } from 'quasar'
 class Api {
   login (mail, mdp) {
-    return window.axios.post('/user/login', {
-      email: mail,
-      password: mdp
+    return window.axios.post('/user/login', {}, {
+      auth: {
+        username: mail,
+        password: mdp
+      }
     });
   }
 
@@ -39,9 +41,9 @@ class Api {
     Loading.hide();
   }
 
-  sendPost(subject, content, ideaName) {
+  sendPost(subject, content, ideaName, mail) {
     console.log('ideaName =', ideaName);
-    return window.axios.post('/forum/post/creator', {
+    return window.axios.post(`/forum/post/${mail}`, {
       subject: subject,
       content: content,
       name: ideaName
@@ -50,6 +52,10 @@ class Api {
 
   getPosts(category) {
     return window.axios.get('/forum/posts');
+  }
+
+  getPostsOfCurrentUser(idUser) {
+    return axios.get(`/forum/posts/${idUser}`);
   }
 
   commentPost(idPost, content, mail, lastName) {

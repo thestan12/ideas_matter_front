@@ -71,14 +71,6 @@ export default {
 
         }, () => {
           api.finishedLoading();
-          StorageService.setToken('temporary token');
-          let user = {
-            'firstName' : 'Souissi',
-            'lastName'  : 'Mohamed',
-            'email'     : 'Mohaxoy98@gmail.com'
-          }
-          StorageService.setUser(user);
-          location.href = 'home';
           this.$q.notify({
             color: 'red-7',
             textColor: 'white',

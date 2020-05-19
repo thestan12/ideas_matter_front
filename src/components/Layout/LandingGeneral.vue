@@ -278,6 +278,7 @@ export default {
     submitComment(payload) {
       console.log('payload =', payload,"     currentIdeaId =", this.currentIdeaId);
       let vm = this;
+      vm.commentDialog = false;
       if (payload && vm.currentIdeaId !== -1) {
         let mail = (StorageService.getUser() && StorageService.getUser().email) ? StorageService.getUser().email : 'Anonymous e-mail';
         let lastName = (StorageService.getUser() && StorageService.getUser().lastName) ? StorageService.getUser().lastName : 'Anonymous person';
@@ -300,7 +301,8 @@ export default {
     submitIdea() {
       let vm = this;
       api.loading("Chargement en cours");
-      api.sendPost(this.categorie, this.editor, this.ideaName).then(response => {
+      let mail = (StorageService.getUser() && StorageService.getUser().email) ? StorageService.getUser().email : 'Anonymous e-mail';
+      api.sendPost(this.categorie, this.editor, this.ideaName, mail).then(response => {
         console.log("response =", response);
         vm.ideas.push({
           "id": response.data.idPost,
@@ -362,6 +364,7 @@ export default {
         this.stillLooking = false;
         api.finishedLoading();
       }).catch((err) => {
+        this.stillLooking = false;
         console.warn("can't fetch posts from dataBase ", err);
         api.finishedLoading();
         this.$q.notify({
