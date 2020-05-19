@@ -5,6 +5,7 @@ const Home = () => import('pages/Home')
 const About = () => import('pages/about')
 
 import '../../axios'
+import StorageService from '../services/storage-service';
 
 // routes for anonymous user
 const RoutesConnected = [
@@ -26,6 +27,7 @@ const RoutesConnected = [
         }
       },
       {
+        name: 'Home',
         path: '',
         redirect: '/home'
       }
@@ -40,6 +42,7 @@ const RoutesInconnected = [
     component: LayoutInconnected,
     children: [
       {
+        name: 'Home',
         path: '/home',
         components: {
           default: Home
@@ -52,6 +55,7 @@ const RoutesInconnected = [
         }
       },
       {
+        name: 'Home',
         path: '',
         redirect: '/home'
       }
@@ -66,14 +70,17 @@ const Routes = [
   }
 ]
 
-const connected = sessionStorage.getItem('token')
-const user = JSON.parse(sessionStorage.getItem('user'))
+const connected = StorageService.getToken();
+console.log('connected =', connected);
 
 var routes
 switch (true) {
-  case connected && !user.isAdmin:
-    routes = [...RoutesConnected, ...Routes]
-    break
+  case connected && connected !== '':
+    routes = [...RoutesConnected, ...Routes];
+    if (!StorageService.getFirstConnection()) {
+      StorageService.setFirstConnection("true");
+    }
+    break;
   default:
     routes = [...RoutesInconnected, ...Routes]
 }

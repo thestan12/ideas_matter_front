@@ -43,6 +43,7 @@
 </template>
 <script>
 import api from '../../services/api'
+import StorageService from '../../services/storage-service'
 
 export default {
   name: 'Connexion',
@@ -60,20 +61,31 @@ export default {
   methods: {
     login () {
       api.loading('Chargement en cours')
-      api.login({ email: this.email, password: this.mdp })
+      api.login(this.email, this.mdp )
         .then(response => {
-          api.finishedLoading()
-          sessionStorage.setItem('token', response.data.data.token)
-          sessionStorage.setItem('user', JSON.stringify(response.data.data.user))
-          location.href = response.data.data.user.isAdmin ? 'admin' : 'home'
+          console.log('respone =', response);
+          api.finishedLoading();
+          StorageService.setToken('temporary token');
+          StorageService.setUser(response.data);
+          location.href = 'home';
+
         }, () => {
+          api.finishedLoading();
+          StorageService.setToken('temporary token');
+          let user = {
+            'firstName' : 'Souissi',
+            'lastName'  : 'Mohamed',
+            'email'     : 'Mohaxoy98@gmail.com'
+          }
+          StorageService.setUser(user);
+          location.href = 'home';
           this.$q.notify({
             color: 'red-7',
             textColor: 'white',
             icon: 'fas fa-check-circle',
             message: 'Invalid credentials'
-          })
-        })
+          });
+        });
     }
   }
 }

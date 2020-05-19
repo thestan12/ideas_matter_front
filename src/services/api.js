@@ -1,11 +1,19 @@
 import { Loading } from 'quasar'
 class Api {
-  login (data) {
-    return window.axios.post('/login', data)
+  login (mail, mdp) {
+    return window.axios.post('/user/login', {
+      email: mail,
+      password: mdp
+    });
   }
 
-  createUser (data) {
-    return window.axios.post('/users', data)
+  createUser (nom, prenom, mail , mdp) {
+    return window.axios.post('/user/create', {
+      firstName : nom,
+      lastName: prenom,
+      email: mail,
+      password: mdp
+    });
   }
 
   listClientRequests () {
@@ -21,7 +29,6 @@ class Api {
   }
 
   loading(message, delay) {
-    console.log('start le loading');
     Loading.show({
       message, messageColor: 'white', spinnerSize: 250, spinnerColor: 'white', delay: delay || 400
     });
@@ -32,10 +39,12 @@ class Api {
     Loading.hide();
   }
 
-  sendPost(subject, content) {
+  sendPost(subject, content, ideaName) {
+    console.log('ideaName =', ideaName);
     return window.axios.post('/forum/post/creator', {
       subject: subject,
-      content: content
+      content: content,
+      name: ideaName
     });
   }
 
@@ -43,9 +52,10 @@ class Api {
     return window.axios.get('/forum/posts');
   }
 
-  commentPost(idPost, content) {
-    return window.axios.put(`/forum/post/${idPost}/comment/serge`, {
-      content: content
+  commentPost(idPost, content, mail, lastName) {
+    return window.axios.put(`/forum/post/${idPost}/comment/${mail}`, {
+      content: content,
+      owner: lastName
     });
   }
 
@@ -59,6 +69,11 @@ class Api {
 
   dislikePost(idPost) {
     return window.axios.put(`/forum/post/${idPost}/dislike`);
+  }
+
+  findPostByCategory(category) {
+    console.log('trying to get the next category :', category);
+    return window.axios.get(`forum/posts/category/${category}`);
   }
 
 }

@@ -29,13 +29,13 @@
         >
           <q-input
             v-model="nom"
-            label="Votre nom *"
+            label="First name *"
             lazy-rules
             :rules="[ val => checkFormula(val, 'nom') || 'Veuillez entrer votre vraie nom']"
           />
           <q-input
             v-model="prenom"
-            label="Votre prènom *"
+            label="Last name *"
             lazy-rules
             :rules="[ val => val && checkFormula(val, 'prenom') || 'Veuillez entrer votre vraie prènom']"
           />
@@ -61,7 +61,7 @@
         >
           <q-input
           v-model="email"
-          label="Votre adresse mail *"
+          label="Your e-mail *"
           lazy-rules
           :rules="[ val => val && checkFormula(val, 'mail') || 'Adresse mail non valide']"
           type="email"
@@ -77,7 +77,7 @@
   </q-step>
   <q-step
     :name="3"
-    title="Mot de passe"
+    title="Your password"
     icon="security"
     :done="step > 3"
     >
@@ -90,7 +90,7 @@
             v-model="psw"
             filled
             :type="isPwdFirstMdp ? 'password' : 'text'"
-            placeholder="Votre mot de passe"
+            placeholder="Your password"
             :rules="[ val => val && checkMdpStrength(val) || 'Votre mot de passe doit avoir au moins six charactères avec des majuscules et des chiffres']"
           >
             <template v-slot:append>
@@ -106,7 +106,7 @@
               v-model="confirmPsw"
               filled
               :type="isPwdSecondMdp ? 'password' : 'text'"
-              placeholder="Confimer votre mot de passe"
+              placeholder="Confirm your password"
               :rules="[ val => val && checkMdpMatch(val, psw) || 'Les mots de passe saisis ne sont pas identiques']"
           >
             <template v-slot:append>
@@ -119,7 +119,7 @@
           </q-input>
           <div class="q-pa-md">
             <div class="q-gutter-lg" style="max-width: 300px">
-              <q-btn label="Terminer" color="primary" v-if="psw !== null && confirmPsw != null && psw.length > 6 && psw === confirmPsw" @click="onSubmit" v-close-popup/>
+              <q-btn label="Finish" color="primary" v-if="psw !== null && confirmPsw != null && psw.length > 6 && psw === confirmPsw" @click="onSubmit" v-close-popup/>
             </div>
           </div>
         </q-form>
@@ -174,15 +174,8 @@ export default {
       return false
     },
     onSubmit () {
-      api.createUser({
-        firstName: this.nom,
-        lastName: this.prenom,
-        email: this.email,
-        phone: this.tel,
-        password: this.psw,
-        address: this.adresse_livrasion
-      })
-      .then(() => {
+      console.log('nom =', this.nom, ', prenom =',this.prenom,' email =', this.email, ', psw =', this.psw);
+      api.createUser(this.nom, this.prenom, this.email, this.psw).then(() => {
         this.$q.notify({
           color: 'green-7',
           textColor: 'white',
@@ -190,16 +183,16 @@ export default {
           message: 'Inscription reussite, vous pouvez se connecter avec votre compte'
         })
       }, (error) => {
-        let message = error.response.status !== 403 ? 'Error'
-        : 'Il existe un utilisateur utilisant l\'adresse email fournit'
-        this.$q.notify({
-          color: 'red-7',
-          textColor: 'white',
-          icon: 'fas fa-check-circle',
-          message: message
+          let message = error.response.status !== 403 ? 'Error'
+          : 'Il existe un utilisateur utilisant l\'adresse email fournit'
+          this.$q.notify({
+            color: 'red-7',
+            textColor: 'white',
+            icon: 'fas fa-check-circle',
+            message: message
+          });
         })
-      })
-      }
     }
   }
+}
 </script>

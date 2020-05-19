@@ -9,7 +9,7 @@
         direction="up"
         color="accent"
       >
-        <q-fab-action @click="publishDialog = true;triggerFocus()" color="black" icon="add">
+        <q-fab-action @click="handlePublishIdea" color="black" icon="add">
           <q-tooltip anchor="center left" self="center right" :offset="[10, 10]">
             <strong>Publish an idea</strong>
             (<q-icon name="wb_incandescent"/>)
@@ -23,10 +23,15 @@
       <div class="col-md-11">
         <div v-for="idea in ideas" :key="idea.id">
           <div class="col-xl-2 col-md-4 col-xs-5 q-ml-lg q-pa-xl">
-            <q-card       class=" text-white"
-      style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">
+            <q-card class=" text-white" style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">
               <q-item-section class="q-pa-md">
-                <font size="5"><strong>{{idea.name}}</strong></font>
+                <font size="5">
+                  <strong>
+                    <p>
+                      {{idea.name}}
+                      <q-badge v-if="idea.category" color="black" floating>{{idea.category}}</q-badge>
+                    </p>
+                </strong></font>
               </q-item-section>
               <q-separator />
               <q-card-section class="q-pa-md">
@@ -50,14 +55,14 @@
               </q-item-section>
 
               <q-card-actions align="right">
-                <q-btn label="Support the idea" color="light-blue" size="md" :disable="!userIsLogged" @click="donationDialog = true"/>
+                <q-btn label="Support the idea" color="light-blue" size="md" @click="triggerDonationDialog()"/>
                 <q-btn flat round color="grey" icon="thumb_down" @click="dislikePost(idea.id)"/>
                 <q-btn flat round color="grey" icon="thumb_up"  @click="likePost(idea.id)">
                   <q-badge v-if="idea.likes === 0" color="blue" floating>{{idea.likes}}</q-badge>
                   <q-badge v-if="idea.likes > 0" color="green" floating>{{idea.likes}}</q-badge>
                   <q-badge v-if="idea.likes < 0" color="red" floating>{{idea.likes}}</q-badge>
                 </q-btn>
-                <q-btn flat round color="white" icon="add_comment" @click="commentDialog = true; currentIdeaId = idea.id">
+                <q-btn flat round color="white" icon="add_comment" @click="triggerCommentDialog(idea.id)">
                   <q-tooltip>
                     Add a comment
                   </q-tooltip>
@@ -73,6 +78,20 @@
       </div>
     </div>
     <!-- End ideas-display -->
+
+    <!-- in case there's 0 ideas -->
+    <div v-if="noResult">
+      <br><br><br><br><br>
+      <center>
+        <q-icon name="far fa-grin-beam-sweat" size="100px" color="primary"/>
+      </center>
+      <br>
+      <center>
+        <font size="5"><strong>No posts was found for the selected category</strong></font>
+      </center>
+      <br>
+    </div>
+    <!--  -->
 
     <!-- idea-publisher -->
     <q-dialog
@@ -138,11 +157,30 @@
 
     <donation :donationDialog="donationDialogC" @submitDonation="submitDonation"/>
 
+    <q-dialog
+      v-model="alertLoging"
+    >
+      <q-card style="width: 300px">
+        <q-card-section>
+          <div class="text-h6">Ooolaa</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          You need to login in first !!
+        </q-card-section>
+
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn flat label="OK" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+
   </q-page>
 </template>
 <script>
 
 import api from '../../services/api'
+import StorageService from '../../services/storage-service'
 import ideasComments from '../Comments/comments'
 import commentsCreator from '../Comments/commentCreator'
 import donation from '../Donation/donate'
@@ -157,6 +195,7 @@ export default {
 
   data () {
     return {
+      alertLoging: false,
       currentIdeaId: -1, // which idea the user gonna comment
       categorie: null,
       currentCategory: "All Categories",
@@ -169,15 +208,42 @@ export default {
       ideas: [],
       id: 0,
       nbLike: 0,
-      userIsLogged: true,
       commentDialog: false,
       comments: [],
-      donationDialog: false
+      donationDialog: false,
+      stillLooking: true
     }
   },
 
   methods: {
+    triggerCommentDialog(id) {
+      if (!this.userIsLogged) {
+        this.alertLoging = true;
+        return ;
+      }
+      this.commentDialog = true;
+      this.currentIdeaId = id;
+    },
+    triggerDonationDialog() {
+      if (!this.userIsLogged) {
+        this.alertLoging = true;
+        return ;
+      }
+      this.donationDialog = true;
+    },
+    handlePublishIdea() {
+      if (!this.userIsLogged) {
+        this.alertLoging = true;
+        return ;
+      }
+      this.publishDialog = true;
+      this.triggerFocus();
+    },
     dislikePost(id) {
+      if (!this.userIsLogged) {
+        this.alertLoging = true;
+        return ;
+      }
       let vm = this;
       api.dislikePost(id).then(response => {
         console.log('response disliking post=', response);
@@ -187,6 +253,10 @@ export default {
       })
     },
     likePost(id) {
+      if (!this.userIsLogged) {
+        this.alertLoging = true;
+        return ;
+      }
       let vm = this;
       api.likePost(id).then(response => {
         console.log('response liking post=', response);
@@ -209,7 +279,9 @@ export default {
       console.log('payload =', payload,"     currentIdeaId =", this.currentIdeaId);
       let vm = this;
       if (payload && vm.currentIdeaId !== -1) {
-        api.commentPost(vm.currentIdeaId, payload).then(response => {
+        let mail = (StorageService.getUser() && StorageService.getUser().email) ? StorageService.getUser().email : 'Anonymous e-mail';
+        let lastName = (StorageService.getUser() && StorageService.getUser().lastName) ? StorageService.getUser().lastName : 'Anonymous person';
+        api.commentPost(vm.currentIdeaId, payload, mail, lastName).then(response => {
           console.log('response =', response);
           vm.ideas.find(div => div.id === vm.currentIdeaId).comments = response.data.comments;
         }).catch((err) => {
@@ -227,16 +299,21 @@ export default {
     },
     submitIdea() {
       let vm = this;
-      api.sendPost(this.categorie, this.editor).then(response => {
+      api.loading("Chargement en cours");
+      api.sendPost(this.categorie, this.editor, this.ideaName).then(response => {
         console.log("response =", response);
         vm.ideas.push({
           "id": response.data.idPost,
           "content": response.data.content,
-          "name": response.data.subject,
-          "category": "none"
+          "name": (response.data.name) ? response.data.name : 'No name found' ,
+          "category": response.data.subject,
+          "comments": [],
+          "userEmail": response.data.userEmail
         });
+        api.finishedLoading();
       }).catch((err) => {
         console.warn("error while sending the post to the server ", err);
+        api.finishedLoading();
       });
 
       this.editor="";
@@ -263,9 +340,49 @@ export default {
         }
       }
       return false;
+    },
+    fetshPostOfAllCategorys() {
+      let vm = this;
+      api.loading("Chargement en cours");
+      api.getPosts().then(response => {
+        vm.ideas = [];
+        console.log('response =', response);
+        for(let div of response.data) {
+          console.log('div.comments =', div.comments);
+          vm.ideas.push({
+            "id": div.idPost,
+            "content": div.content,
+            "name": (div && div.name) ? div.name : 'No name found',
+            "category": div.subject,
+            "comments": div.comments,
+            "likes": div.likes,
+            "userEmail": div.userEmail
+          });
+        }
+        this.stillLooking = false;
+        api.finishedLoading();
+      }).catch((err) => {
+        console.warn("can't fetch posts from dataBase ", err);
+        api.finishedLoading();
+        this.$q.notify({
+          message: 'An error has occurred, can\'t connect to the backEnd side',
+          color: 'red-7',
+          textColor: 'white',
+          icon: 'warning'
+        });
+      });
     }
   },
   computed: {
+    noResult() {
+      if (this.stillLooking) {
+        return false;
+      }
+      return this.ideas.length === 0;
+    },
+    userIsLogged() {
+      return StorageService.getUser() && StorageService.getUser() !== null;
+    },
     indiceSubmit() {
       if (!this.ideaName) {
         return "The idea name should not be empty"
@@ -314,48 +431,45 @@ export default {
     }
   },
   mounted() {
-    // this.ideas.push({
-    //   "id": 0,
-    //   "content": "Le contenu de l'idée, Le contenu de l'idée, Le contenu de l'idée, Le contenu de l'idée, Le contenu de l'idée, Le contenu de l'idée, Le contenu de l'idée, Le contenu de l'idée, Le contenu de l'idée, Le contenu de l'idée, Le contenu de l'idée,",
-    //   "name": "The best idea ever",
-    //   "category": "none"
-    // })
   },
   created() {
-    let vm = this;
-    // api.loading();
-    api.getPosts().then(response => {
-      console.log('response =', response);
-      for(let div of response.data) {
-        vm.ideas.push({
-          "id": div.idPost,
-          "content": div.content,
-          "name": div.subject,
-          "category": "none",
-          "comments": div.comments,
-          "likes": div.likes
-        });
-      }
-      // api.finishedLoading();
-    }).catch((err) => {
-      console.warn("can't fetch posts from dataBase ", err);
-      // api.finishedLoading();
-      this.$q.notify({
-        message: 'An error has occurred, can\'t connect to the backEnd side',
-        color: 'red-7',
-        textColor: 'white',
-        icon: 'warning'
-      });
-    });
+    this.fetshPostOfAllCategorys();
   },
   watch: {
     $route(to, from) {
+      let vm = this;
       if (this.$router.history.current.query && this.$router.history.current.query.category) {
         this.currentCategory = this.$router.history.current.query.category;
+        api.loading("Chargement en cours");
+        api.findPostByCategory(vm.currentCategory).then(response => {
+          console.log('response of current category ', response);
+          vm.ideas = [];
+          for(let div of response.data) {
+            vm.ideas.push({
+              "id": div.idPost,
+              "content": div.content,
+              "name": (div && div.name) ? div.name : 'No name found',
+              "category": div.subject,
+              "comments": div.comments,
+              "likes": div.likes,
+              "userEmail": div.userEmail
+            });
+          }
+          api.finishedLoading();
+        }).catch((err) => {
+          console.warn("can't fetch posts from dataBase ", err);
+          api.finishedLoading();
+          this.$q.notify({
+            message: 'An error has occurred while fetching post of ' + vm.currentCategory,
+            color: 'red-7',
+            textColor: 'white',
+            icon: 'warning'
+          });
+        });
       } else {
         this.currentCategory = "All Categories";
+        vm.fetshPostOfAllCategorys();
       }
-      // this.ideas = []
     }
   }
 }

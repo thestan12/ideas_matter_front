@@ -11,7 +11,7 @@
           icon="menu"
         >
         </q-btn>
-        <q-toolbar-title color="red" @click="goHome" class="title">
+        <q-toolbar-title @click="goHome" class="title">
           <strong>Ideas Matter</strong>
         </q-toolbar-title>
         <q-btn-toggle
@@ -96,41 +96,48 @@
       bordered
       content-class="bg-grey-2"
     >
-    <q-list>
-      <q-item clickable tag="a" target="" @click="goTo('home?category=Technology')">
-        <q-item-section avatar>
-          <q-icon name="android" size="50px"/>
-        </q-item-section>
+      <q-list>
+        <q-item clickable tag="a" target="" @click="goTo('home');clickDrawer();">
           <q-item-section>
             <div class="q-pa-md">
-                <q-item-label>Technology</q-item-label>
-                <q-item-label caption>All about technology</q-item-label>
+                <q-item-label><center><font color="black" size="5">All categorys</font></center></q-item-label>
             </div>
           </q-item-section>
-      </q-item>
-      <q-item clickable tag="a" target="" @click="goTo('home?category=Science')">
-        <q-item-section avatar>
-          <q-icon name="spa" size="50px"/>
-        </q-item-section>
-          <q-item-section>
-          <div class="q-pa-md">
-            <q-item-label>Science</q-item-label>
-            <q-item-label caption>All about science</q-item-label>
-          </div>
+        </q-item>
+        <q-item clickable tag="a" target="" @click="goTo('home?category=Technology');clickDrawer();">
+          <q-item-section avatar>
+            <q-icon name="android" size="50px"/>
           </q-item-section>
-      </q-item>
-      <q-item clickable tag="a" target="" @click="goTo('home?category=Space')">
-        <q-item-section avatar>
-          <q-icon name="public" size="50px"/>
-        </q-item-section>
-          <q-item-section>
-          <div class="q-pa-md">
-            <q-item-label>Space</q-item-label>
-            <q-item-label caption>All about space</q-item-label>
-          </div>
+            <q-item-section>
+              <div class="q-pa-md">
+                  <q-item-label>Technology</q-item-label>
+                  <q-item-label caption>All about technology</q-item-label>
+              </div>
+            </q-item-section>
+        </q-item>
+        <q-item clickable tag="a" target="" @click="goTo('home?category=Science');clickDrawer();">
+          <q-item-section avatar>
+            <q-icon name="spa" size="50px"/>
           </q-item-section>
-      </q-item>
-  </q-list>
+            <q-item-section>
+            <div class="q-pa-md">
+              <q-item-label>Science</q-item-label>
+              <q-item-label caption>All about science</q-item-label>
+            </div>
+            </q-item-section>
+        </q-item>
+        <q-item clickable tag="a" target="" @click="goTo('home?category=Space');clickDrawer();">
+          <q-item-section avatar>
+            <q-icon name="public" size="50px"/>
+          </q-item-section>
+            <q-item-section>
+            <div class="q-pa-md">
+              <q-item-label>Space</q-item-label>
+              <q-item-label caption>All about space</q-item-label>
+            </div>
+            </q-item-section>
+        </q-item>
+      </q-list>
     </q-drawer>
     <q-page-container>
       <router-view />
@@ -162,7 +169,8 @@ export default {
   },
   methods: {
     goTo (href) {
-      this.$router.push(href)
+      console.log('dans le goTo');
+      this.$router.push(href,  () => { })
     },
     onDialogHide () {
       // required to be emitted
