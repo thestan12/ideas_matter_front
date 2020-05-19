@@ -28,7 +28,7 @@
                 <font size="5">
                   <strong>
                     <p>
-                      {{idea.name}}
+                      {{idea.subject}}
                       <q-badge v-if="idea.category" color="black" floating>{{idea.category}}</q-badge>
                     </p>
                 </strong></font>
@@ -55,6 +55,9 @@
               </q-item-section>
 
               <q-card-actions align="right">
+                <q-chip size="lg" clickable class="q-ma-md" color="secondary" text-color="white" icon="local_atm">
+                  funds collected : 0 $
+                </q-chip>
                 <q-btn label="Support the idea" color="light-blue" size="md" @click="triggerDonationDialog()"/>
                 <q-btn flat round color="grey" icon="thumb_down" @click="dislikePost(idea.id)"/>
                 <q-btn flat round color="grey" icon="thumb_up"  @click="likePost(idea.id)">
@@ -87,7 +90,7 @@
       </center>
       <br>
       <center>
-        <font size="5"><strong>No posts was found for the selected category</strong></font>
+        <font size="5"><strong>No posts was found for {{currentCategory}}</strong></font>
       </center>
       <br>
     </div>
@@ -202,7 +205,6 @@ export default {
       publishDialog: false,
       ideaName: "",
       categoriesOptions: [
-        'Technologie', 'Science', 'Space'
       ],
       editor: 'Describe your idea here',
       ideas: [],
@@ -246,7 +248,7 @@ export default {
       }
       let vm = this;
       api.dislikePost(id).then(response => {
-        console.log('response disliking post=', response);
+        // console.log('response disliking post=', response);
         vm.ideas.find(div => div.id === id).likes = vm.ideas.find(div => div.id === id).likes - 1;
       }).catch((err) => {
         console.warn("error while liking post with id =", id, ", the error is  ",err);
@@ -259,14 +261,14 @@ export default {
       }
       let vm = this;
       api.likePost(id).then(response => {
-        console.log('response liking post=', response);
+        // console.log('response liking post=', response);
         vm.ideas.find(div => div.id === id).likes = vm.ideas.find(div => div.id === id).likes + 1;
       }).catch((err) => {
         console.warn("error while liking post with id =", id, ", the error is  ",err);
       })
     },
     submitDonation(payload) {
-      console.log('donation submited successfuly');
+      // console.log('donation submited successfuly');
       this.donationDialog = false;
     },
     triggerFocus() {
@@ -276,14 +278,14 @@ export default {
       }, 100);
     },
     submitComment(payload) {
-      console.log('payload =', payload,"     currentIdeaId =", this.currentIdeaId);
+      // console.log('payload =', payload,"     currentIdeaId =", this.currentIdeaId);
       let vm = this;
       vm.commentDialog = false;
       if (payload && vm.currentIdeaId !== -1) {
         let mail = (StorageService.getUser() && StorageService.getUser().email) ? StorageService.getUser().email : 'Anonymous e-mail';
         let lastName = (StorageService.getUser() && StorageService.getUser().lastName) ? StorageService.getUser().lastName : 'Anonymous person';
         api.commentPost(vm.currentIdeaId, payload, mail, lastName).then(response => {
-          console.log('response =', response);
+          // console.log('response =', response);
           vm.ideas.find(div => div.id === vm.currentIdeaId).comments = response.data.comments;
         }).catch((err) => {
           console.warn('err =', err);
@@ -303,12 +305,12 @@ export default {
       api.loading("Chargement en cours");
       let mail = (StorageService.getUser() && StorageService.getUser().email) ? StorageService.getUser().email : 'Anonymous e-mail';
       api.sendPost(this.categorie, this.editor, this.ideaName, mail).then(response => {
-        console.log("response =", response);
+        // console.log("response =", response);
         vm.ideas.push({
           "id": response.data.idPost,
           "content": response.data.content,
-          "name": (response.data.name) ? response.data.name : 'No name found' ,
-          "category": response.data.subject,
+          "subject": (response.data.subject) ? response.data.subject : 'No subject found' ,
+          "category": response.data.category,
           "comments": [],
           "userEmail": response.data.userEmail
         });
@@ -348,14 +350,14 @@ export default {
       api.loading("Chargement en cours");
       api.getPosts().then(response => {
         vm.ideas = [];
-        console.log('response =', response);
+        // console.log('response =', response);
         for(let div of response.data) {
-          console.log('div.comments =', div.comments);
+          // console.log('div.comments =', div.comments);
           vm.ideas.push({
             "id": div.idPost,
             "content": div.content,
-            "name": (div && div.name) ? div.name : 'No name found',
-            "category": div.subject,
+            "subject": (div && div.subject) ? div.subject : 'No subject found',
+            "category": div.category,
             "comments": div.comments,
             "likes": div.likes,
             "userEmail": div.userEmail
@@ -373,6 +375,14 @@ export default {
           textColor: 'white',
           icon: 'warning'
         });
+      });
+    },
+    fetshCategories() {
+      api.fetshCategories()
+      .then(response => response.data)
+      .then(categories => this.categoriesOptions = [...categories.map(div => div.name)])
+      .catch((err) => {
+        console.warn('error fetshing all categories');
       });
     }
   },
@@ -413,7 +423,7 @@ export default {
       return this.currentCategory;
     },
     currentCategoryIcon() {
-      console.log('res =', this.currentCategory);
+      // console.log('res =', this.currentCategory);
       if (!this.currentCategory) return '';
 
       if (this.currentCategory === 'Technology') {
@@ -429,7 +439,7 @@ export default {
       }
     },
     donationDialogC() {
-      console.log('dans le donnation dialog computed', this.donationDialog);
+      // console.log('dans le donnation dialog computed', this.donationDialog);
       return this.donationDialog;
     }
   },
@@ -437,6 +447,7 @@ export default {
   },
   created() {
     this.fetshPostOfAllCategorys();
+    this.fetshCategories();
   },
   watch: {
     $route(to, from) {
@@ -445,14 +456,14 @@ export default {
         this.currentCategory = this.$router.history.current.query.category;
         api.loading("Chargement en cours");
         api.findPostByCategory(vm.currentCategory).then(response => {
-          console.log('response of current category ', response);
+          // console.log('response of current category ', response);
           vm.ideas = [];
           for(let div of response.data) {
             vm.ideas.push({
               "id": div.idPost,
               "content": div.content,
-              "name": (div && div.name) ? div.name : 'No name found',
-              "category": div.subject,
+              "subject": (div && div.subject) ? div.subject : 'No subject found',
+              "category": div.category,
               "comments": div.comments,
               "likes": div.likes,
               "userEmail": div.userEmail

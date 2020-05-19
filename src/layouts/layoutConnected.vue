@@ -50,36 +50,16 @@
             </div>
           </q-item-section>
         </q-item>
-        <q-item clickable tag="a" target="" @click="goTo('home?category=Technology'); clickDrawer()">
+      </q-list>
+      <q-list v-for="category in categories" :key="category.id">
+        <q-item clickable tag="a" target="" @click="goTo(`home?category=${category.name}`);clickDrawer();">
           <q-item-section avatar>
-            <q-icon name="android" size="50px"/>
-          </q-item-section>
-            <q-item-section>
-              <div class="q-pa-md">
-                  <q-item-label>Technology</q-item-label>
-                  <q-item-label caption>All about technology</q-item-label>
-              </div>
-            </q-item-section>
-        </q-item>
-        <q-item clickable tag="a" target="" @click="goTo('home?category=Science'); clickDrawer()">
-          <q-item-section avatar>
-            <q-icon name="spa" size="50px"/>
+            <q-icon :name="calculateIcon(category.name)" size="50px"/>
           </q-item-section>
             <q-item-section>
             <div class="q-pa-md">
-              <q-item-label>Science</q-item-label>
-              <q-item-label caption>All about science</q-item-label>
-            </div>
-            </q-item-section>
-        </q-item>
-        <q-item clickable tag="a" target="" @click="goTo('home?category=Space'); clickDrawer()">
-          <q-item-section avatar>
-            <q-icon name="public" size="50px"/>
-          </q-item-section>
-            <q-item-section>
-            <div class="q-pa-md">
-              <q-item-label>Space</q-item-label>
-              <q-item-label caption>All about space</q-item-label>
+              <q-item-label>{{category.name}}</q-item-label>
+              <q-item-label caption>{{calculateDescription(category.name)}}</q-item-label>
             </div>
             </q-item-section>
         </q-item>
@@ -91,6 +71,7 @@
   </q-layout>
 </template>
 <script>
+import api from '../services/api'
 import StorageService from '../services/storage-service'
 import ProfileMenus from 'src/components/profile/ProfileMenus'
 
@@ -101,7 +82,8 @@ export default {
   },
   data () {
     return {
-      leftDrawerOpen: false
+      leftDrawerOpen: false,
+      categories: []
     }
   },
   computed: {
@@ -133,7 +115,32 @@ export default {
     },
     goToMyIdeas() {
       this.$router.push("/my-ideas");
+    },
+    calculateIcon(name) {
+      switch (name) {
+        case "Technologie":
+          return "android";
+          break;
+        case "Science":
+          return "spa";
+          break;
+        case "Space":
+          return "public";
+          break;
+        default: return "";
+      }
+    },
+    calculateDescription(name) {
+      return "All about " + name;
     }
+  },
+  created() {
+    api.fetshCategories()
+    .then(response => response.data)
+    .then(categories => this.categories = [...categories])
+    .catch((err) => {
+      console.warn('error fetshing all categories');
+    });
   }
 }
 </script>

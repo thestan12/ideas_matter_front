@@ -19,7 +19,7 @@ module.exports = function (ctx) {
     extras: [
       // 'ionicons-v4',
       // 'mdi-v4',
-      // 'fontawesome-v5',
+      'fontawesome-v5',
       // 'eva-icons',
       // 'themify',
       // 'line-awesome',
@@ -34,7 +34,9 @@ module.exports = function (ctx) {
       all: 'auto',
 
       // Quasar plugins
-      plugins: []
+      plugins: [
+        'Notify'
+      ]
     },
 
     // https://quasar.dev/quasar-cli/cli-documentation/supporting-ie
@@ -45,10 +47,10 @@ module.exports = function (ctx) {
       vueRouterMode: 'history', // available values: 'hash', 'history'
       env: ctx.dev
         ? { // so on dev we'll have
-          API: JSON.stringify('https://jeeback.azurewebsites.net')
+          API: JSON.stringify('http://localhost:8080')
         }
         : { // and on build (production):
-          API: JSON.stringify('https://jeeback.azurewebsites.net')
+          API: JSON.stringify('http://localhost:8080')
         },
         distDir: ctx.mode.spa ? 'public' : null,
       // rtl: false, // https://quasar.dev/options/rtl-support

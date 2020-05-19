@@ -15,7 +15,6 @@ const RoutesConnected = [
     component: LayoutConnected,
     children: [
       {
-        name: 'Home',
         path: '/home',
         components: {
           default: Home
@@ -35,7 +34,6 @@ const RoutesConnected = [
         }
       },
       {
-        name: 'Home',
         path: '',
         redirect: '/home'
       }
@@ -50,7 +48,6 @@ const RoutesInconnected = [
     component: LayoutInconnected,
     children: [
       {
-        name: 'Home',
         path: '/home',
         components: {
           default: Home
@@ -63,7 +60,6 @@ const RoutesInconnected = [
         }
       },
       {
-        name: 'Home',
         path: '',
         redirect: '/home'
       }

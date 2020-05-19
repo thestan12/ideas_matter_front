@@ -41,12 +41,11 @@ class Api {
     Loading.hide();
   }
 
-  sendPost(subject, content, ideaName, mail) {
-    console.log('ideaName =', ideaName);
+  sendPost(category, content, subject, mail) {
     return window.axios.post(`/forum/post/${mail}`, {
       subject: subject,
       content: content,
-      name: ideaName
+      category: category
     });
   }
 
@@ -80,6 +79,10 @@ class Api {
   findPostByCategory(category) {
     console.log('trying to get the next category :', category);
     return window.axios.get(`forum/posts/category/${category}`);
+  }
+
+  fetshCategories() {
+    return window.axios.get('forum/categories');
   }
 
 }
