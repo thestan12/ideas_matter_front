@@ -444,6 +444,10 @@ export default {
     }
   },
   mounted() {
+    if (this.$router.history.current.query && this.$router.history.current.query.publish) {
+      console.log('hererere')
+      this.publishDialog = true;
+    }
   },
   created() {
     this.fetshPostOfAllCategorys();

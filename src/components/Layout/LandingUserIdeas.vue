@@ -72,7 +72,7 @@
       <center>
         <font size="5"><strong>No posts assigned to you was found :(</strong></font>
         <br><br>
-        <q-btn color="primary" label="I am in, i want to create my first idea" @click="goHome"/>
+        <q-btn color="primary" label="I am in, i want to create my first idea" @click="goHomeAndPusblishIdea"/>
       </center>
       <br>
     </div>
@@ -106,8 +106,8 @@ export default {
   },
 
   methods: {
-    goHome() {
-      this.$router.push('/home');
+    goHomeAndPusblishIdea() {
+      this.$router.push('/home?publish=true');
     },
     fetshMyPosts() {
       let vm = this;
