@@ -8,15 +8,25 @@
   <form>
     <div class="flex row q-pa-md justify-center">
         <q-field class="col-6 q-mb-md">
-          <q-input v-model="$v.profileEdit.nom.$model" placeholder="First name"
+          <q-input v-model="profileEdit.nom" placeholder="First name"
             label="Nom"/>
         </q-field>
     </div>
     <div class="flex row q-pa-md justify-center">
         <q-field  class="col-6 q-mb-md">
-          <q-input v-model="$v.profileEdit.prenom.$model" placeholder="Last name"
+          <q-input v-model="profileEdit.prenom" placeholder="Last name"
             label="Prénom"/>
         </q-field>
+    </div>
+    <div class="flex row q-pa-md justify-center">
+      <q-input
+      class="col-6 q-mb-md"
+      v-model="profileEdit.email"
+      label="Your e-mail *"
+      lazy-rules
+      :rules="[ val => val && checkFormula(val, 'mail') || 'Adresse mail non valide']"
+      type="email"
+      />
     </div>
     <div class="flex row col-12 justify-start">
       <password id="password1" autocomplete="new-password" v-model="$v.password1.$model" :toggle="true"
@@ -47,11 +57,13 @@ Vue.use(Vuelidate)
 
 import api from '../../services/api'
 import StorageService from '../../services/storage-service'
+import FormCheck from '../Inscription/FormCheck'
 
 export default {
   name: 'EditProfile',
   components: {
-    Password
+    Password,
+    FormCheck
   },
   data () {
     let user = StorageService.getUser();
@@ -63,7 +75,8 @@ export default {
       passwordScore: 0,
       profileEdit: {
         nom: user.firstName,
-        prenom: user.lastName
+        prenom: user.lastName,
+        email: StorageService.getUser().email
       }
     }
   },
@@ -114,6 +127,12 @@ export default {
     }
   },
   methods: {
+    checkFormula (val , from) {
+      if (from === 'mail') {
+        return FormCheck.checkMail(val)
+      }
+      return false
+    },
     update (data) {
       api.editUser(data)
         .then((response) => {
@@ -156,8 +175,10 @@ export default {
     },
     prepareDataToSend () {
       let data = {
+        idUser: StorageService.getUser().idUser,
         firstName: this.profileEdit.nom,
         lastName: this.profileEdit.prenom,
+        email: this.profileEdit.email
       }
       if (this.password1) {
         data.password = this.password1
@@ -176,6 +197,44 @@ export default {
         let data = this.prepareDataToSend()
         this.update(data)
       }
+      if (this.password1 === this.password2 && this.password1 !== '') {
+        let vm = this;
+        api.updatePassword(vm.password1)
+          .then(response => {
+            console.log('response password =', response);
+          }).catch((err)=> {
+            vm.$q.notify({
+              message: 'Ooola, something went wrong :D',
+              color: 'red-7',
+              textColor: 'white',
+              icon: 'warning'
+            });
+          });
+      }
+    },
+    update(data) {
+      let vm = this;
+      api.updateUser(data).then(response => {
+        console.log('response =', response);
+        vm.profileEdit.nom = data.firstName;
+        vm.profileEdit.prenom = data.lastName;
+        vm.profileEdit.email = data.email;
+        StorageService.setUser(response.data);
+        vm.$q.notify({
+          message: 'vos informations sont mises à jour',
+          color: 'green-7',
+          textColor: 'white',
+          icon: 'done'
+        });
+        this.$emit('hide');
+      }).catch((err) => {
+        vm.$q.notify({
+          message: 'Ooola, something went wrong :D',
+          color: 'red-7',
+          textColor: 'white',
+          icon: 'warning'
+        });
+      });
     },
     onScoreChange (score) {
       this.passwordScore = score

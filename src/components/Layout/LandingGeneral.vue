@@ -1,5 +1,5 @@
 <template>
-  <q-page>
+  <q-page class="background-landing">
     <q-chip size="lg" clickable class="q-ma-md" color="secondary" text-color="white" :icon="currentCategoryIcon">
       {{currentCategoryLabel}}
     </q-chip>
@@ -23,7 +23,7 @@
       <div class="col-md-11">
         <div v-for="idea in ideas" :key="idea.id">
           <div class="col-xl-2 col-md-4 col-xs-5 q-ml-lg q-pa-xl">
-            <q-card class=" text-white" style="background: radial-gradient(circle, #35a2ff 0%, #014a88 100%)">
+            <q-card class="text-white card-color">
               <q-item-section class="q-pa-md">
                 <font size="5">
                   <strong>
@@ -61,9 +61,9 @@
                 <q-btn label="Support the idea" color="light-blue" size="md" @click="triggerDonationDialog()"/>
                 <q-btn flat round color="grey" icon="thumb_down" @click="dislikePost(idea.id)"/>
                 <q-btn flat round color="grey" icon="thumb_up"  @click="likePost(idea.id)">
-                  <q-badge v-if="idea.likes === 0" color="blue" floating>{{idea.likes}}</q-badge>
-                  <q-badge v-if="idea.likes > 0" color="green" floating>{{idea.likes}}</q-badge>
-                  <q-badge v-if="idea.likes < 0" color="red" floating>{{idea.likes}}</q-badge>
+                  <q-badge v-if="idea.likesCount === 0" color="blue" floating>{{idea.likesCount}}</q-badge>
+                  <q-badge v-if="idea.likesCount > 0" color="green" floating>{{idea.likesCount}}</q-badge>
+                  <q-badge v-if="idea.likesCount < 0" color="red" floating>{{idea.likesCount}}</q-badge>
                 </q-btn>
                 <q-btn flat round color="white" icon="add_comment" @click="triggerCommentDialog(idea.id)">
                   <q-tooltip>
@@ -86,11 +86,11 @@
     <div v-if="noResult">
       <br><br><br><br><br>
       <center>
-        <q-icon name="far fa-grin-beam-sweat" size="100px" color="primary"/>
+        <q-icon name="far fa-grin-beam-sweat" size="100px" color="white"/>
       </center>
       <br>
       <center>
-        <font size="5"><strong>No posts was found for {{currentCategory}}</strong></font>
+        <font size="5" color="white"><strong>No posts found for {{currentCategory}}</strong></font>
       </center>
       <br>
     </div>
@@ -165,7 +165,7 @@
     >
       <q-card style="width: 300px">
         <q-card-section>
-          <div class="text-h6">Ooolaa</div>
+          <div class="text-h6">Ooolaa&nbsp;&nbsp;&nbsp;D:</div>
         </q-card-section>
 
         <q-card-section class="q-pt-none">
@@ -178,6 +178,40 @@
       </q-card>
     </q-dialog>
 
+    <q-dialog
+      v-model="alterLike"
+    >
+      <q-card style="width: 300px">
+        <q-card-section>
+          <div class="text-h6">Ooolaa &nbsp;&nbsp;&nbsp;D:</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          You have already liked this idea !!
+        </q-card-section>
+
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn flat label="OK" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
+    <q-dialog
+      v-model="alterDislike"
+    >
+      <q-card style="width: 300px">
+        <q-card-section>
+          <div class="text-h6">Ooolaa &nbsp;&nbsp;&nbsp;D:</div>
+        </q-card-section>
+
+        <q-card-section class="q-pt-none">
+          You have already dislked this idea !!
+        </q-card-section>
+
+        <q-card-actions align="right" class="bg-white text-teal">
+          <q-btn flat label="OK" v-close-popup />
+        </q-card-actions>
+      </q-card>
+    </q-dialog>
   </q-page>
 </template>
 <script>
@@ -199,6 +233,8 @@ export default {
   data () {
     return {
       alertLoging: false,
+      alterLike: false,
+      alterDislike: false,
       currentIdeaId: -1, // which idea the user gonna comment
       categorie: null,
       currentCategory: "All Categories",
@@ -246,13 +282,21 @@ export default {
         this.alertLoging = true;
         return ;
       }
+      if (StorageService.getUser() && StorageService.getUser().idUser) {
       let vm = this;
-      api.dislikePost(id).then(response => {
-        // console.log('response disliking post=', response);
-        vm.ideas.find(div => div.id === id).likes = vm.ideas.find(div => div.id === id).likes - 1;
-      }).catch((err) => {
-        console.warn("error while liking post with id =", id, ", the error is  ",err);
-      })
+        api.dislikePost(id).then(response => {
+          console.log('response disliking post=', response);
+          if (response.data === true) {
+            vm.ideas.find(div => div.id === id).likesCount = vm.ideas.find(div => div.id === id).likesCount - 1;
+            vm.alterDislike = false;
+          } else {
+            console.log('returning false');
+            vm.alterDislike = true;
+          }
+        }).catch((err) => {
+          console.warn("error while disliking post with id =", id, ", the error is  ",err);
+        });
+      }
     },
     likePost(id) {
       if (!this.userIsLogged) {
@@ -260,12 +304,19 @@ export default {
         return ;
       }
       let vm = this;
-      api.likePost(id).then(response => {
-        // console.log('response liking post=', response);
-        vm.ideas.find(div => div.id === id).likes = vm.ideas.find(div => div.id === id).likes + 1;
-      }).catch((err) => {
-        console.warn("error while liking post with id =", id, ", the error is  ",err);
-      })
+      if (StorageService.getUser() && StorageService.getUser().idUser) {
+        api.likePost(id).then(response => {
+          // console.log('response liking post=', response);
+          if (response.data === true) {
+            vm.ideas.find(div => div.id === id).likesCount = vm.ideas.find(div => div.id === id).likesCount + 1;
+            vm.alterLike = false;
+          } else {
+            vm.alterLike = true;
+          }
+        }).catch((err) => {
+          console.warn("error while liking post with id =", id, ", the error is  ",err);
+        });
+      }
     },
     submitDonation(payload) {
       // console.log('donation submited successfuly');
@@ -284,7 +335,7 @@ export default {
       if (payload && vm.currentIdeaId !== -1) {
         let mail = (StorageService.getUser() && StorageService.getUser().email) ? StorageService.getUser().email : 'Anonymous e-mail';
         let lastName = (StorageService.getUser() && StorageService.getUser().lastName) ? StorageService.getUser().lastName : 'Anonymous person';
-        api.commentPost(vm.currentIdeaId, payload, mail, lastName).then(response => {
+        api.commentPost(vm.currentIdeaId, payload).then(response => {
           // console.log('response =', response);
           vm.ideas.find(div => div.id === vm.currentIdeaId).comments = response.data.comments;
         }).catch((err) => {
@@ -304,7 +355,7 @@ export default {
       let vm = this;
       api.loading("Chargement en cours");
       let mail = (StorageService.getUser() && StorageService.getUser().email) ? StorageService.getUser().email : 'Anonymous e-mail';
-      api.sendPost(this.categorie, this.editor, this.ideaName, mail).then(response => {
+      api.sendPost(this.categorie, this.editor, this.ideaName).then(response => {
         // console.log("response =", response);
         vm.ideas.push({
           "id": response.data.idPost,
@@ -312,6 +363,7 @@ export default {
           "subject": (response.data.subject) ? response.data.subject : 'No subject found' ,
           "category": response.data.category,
           "comments": [],
+          "likesCount": 0,
           "userEmail": response.data.userEmail
         });
         api.finishedLoading();
@@ -350,7 +402,7 @@ export default {
       api.loading("Chargement en cours");
       api.getPosts().then(response => {
         vm.ideas = [];
-        // console.log('response =', response);
+        console.log('response all categories =', response);
         for(let div of response.data) {
           // console.log('div.comments =', div.comments);
           vm.ideas.push({
@@ -359,7 +411,7 @@ export default {
             "subject": (div && div.subject) ? div.subject : 'No subject found',
             "category": div.category,
             "comments": div.comments,
-            "likes": div.likes,
+            "likesCount": div.likesCount,
             "userEmail": div.userEmail
           });
         }
@@ -445,7 +497,6 @@ export default {
   },
   mounted() {
     if (this.$router.history.current.query && this.$router.history.current.query.publish) {
-      console.log('hererere')
       this.publishDialog = true;
     }
   },
@@ -469,7 +520,7 @@ export default {
               "subject": (div && div.subject) ? div.subject : 'No subject found',
               "category": div.category,
               "comments": div.comments,
-              "likes": div.likes,
+              "likesCount": div.likesCount,
               "userEmail": div.userEmail
             });
           }
@@ -492,3 +543,15 @@ export default {
   }
 }
 </script>
+<style scoped>
+  .background-landing {
+    background: #F0C27B;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #4B1248, #F0C27B);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #4B1248, #F0C27B); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  }
+  .card-color {
+    background: #00bf8f;  /* fallback for old browsers */
+    background: -webkit-linear-gradient(to right, #001510, #00bf8f);  /* Chrome 10-25, Safari 5.1-6 */
+    background: linear-gradient(to right, #001510, #00bf8f); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
+  }
+</style>

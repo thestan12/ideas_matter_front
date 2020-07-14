@@ -175,7 +175,7 @@ export default {
     },
     onSubmit () {
       console.log('nom =', this.nom, ', prenom =',this.prenom,' email =', this.email, ', psw =', this.psw);
-      api.createUser(this.nom, this.prenom, this.email, this.psw).then(() => {
+      api.createUser(this.nom, this.prenom, this.email, this.psw).then((response) => {
         this.$q.notify({
           color: 'green-7',
           textColor: 'white',

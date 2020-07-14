@@ -63,12 +63,10 @@ export default {
       api.loading('Chargement en cours')
       api.login(this.email, this.mdp )
         .then(response => {
-          console.log('respone =', response);
           api.finishedLoading();
-          StorageService.setToken('temporary token');
+          StorageService.setToken(response.data.token);
           StorageService.setUser(response.data);
           location.href = 'home';
-
         }, () => {
           api.finishedLoading();
           this.$q.notify({

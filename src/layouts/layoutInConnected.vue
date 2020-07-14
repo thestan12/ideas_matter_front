@@ -1,6 +1,6 @@
 <template>
-  <q-layout view="lHh lpr lFf">
-    <q-header elevated>
+  <q-layout view="lHh lpr lFf" color="black">
+    <q-header elevated class="layout-css">
       <q-toolbar class="q-my-ms">
         <q-btn
           flat
@@ -21,7 +21,7 @@
           push
           :ripple="{ color: 'black' }"
           :options="[
-            {label: 'Compte', slot: 'Compte', icon: 'account_circle'}
+            {label: 'Compte', slot: 'Compte', icon: 'account_circle', value: 'Compte'}
           ]"
         >
         <template v-slot:Compte>
@@ -211,5 +211,10 @@ export default {
 <style>
 .title {
   cursor: pointer;
+}
+.layout-css {
+  background: #00bf8f;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #001510, #00bf8f);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #001510, #00bf8f); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 </style>

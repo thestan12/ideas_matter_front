@@ -13,7 +13,6 @@ export default class StorageService {
 
   static getUser() {
     let user = storage.getItem('user');
-    console.log('getting user :', user);
     return JSON.parse(user);
   }
 
@@ -23,10 +22,12 @@ export default class StorageService {
 
 
   static setToken(token) {
+    console.log('setting token');
     storage.setItem('token', token);
   }
 
   static getToken() {
+    console.log('getting token');
     return storage.getItem('token');
   }
 

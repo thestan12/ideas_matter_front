@@ -184,7 +184,7 @@ export default {
         console.log('dans le mountedddddddddd ');
         const script = document.createElement("script");
         script.src =
-        "https://www.paypal.com/sdk/js?client-id=ARNRNvgJTH0oaRUrQUC-p-MgCXzIOl5T6um6YqdW7U9mkwzV-ZkfCtp9c0QH6dRWArJY85Yh3rLCT5Vu";
+        "https://www.paypal.com/sdk/js?client-id=AdSlFoA8xUFJAIPylsQp6z24nXBEVFSW8-dBIgHPZ6vL4_dqj3qjjQegzYI4W6kXT8IKXp0p19WmE7Gb";
         script.addEventListener("load", this.setLoaded);
         document.body.appendChild(script);
       }

@@ -1,4 +1,8 @@
 import { Loading } from 'quasar'
+import StorageService from './storage-service';
+
+var token = StorageService.getToken();
+window.axios.defaults.headers.common['Authorization'] = `Bearer ${token}`;
 class Api {
   login (mail, mdp) {
     return window.axios.post('/user/login', {}, {
@@ -18,18 +22,6 @@ class Api {
     });
   }
 
-  listClientRequests () {
-    return window.axios.get(`/client-requests`)
-  }
-
-  getClientRequest (id) {
-    return window.axios.get(`/client-requests/${id}`)
-  }
-
-  respondRequest(id, content) {
-    return window.axios.post(`/client-requests/${id}/respond`, { content })
-  }
-
   loading(message, delay) {
     Loading.show({
       message, messageColor: 'white', spinnerSize: 250, spinnerColor: 'white', delay: delay || 400
@@ -41,8 +33,8 @@ class Api {
     Loading.hide();
   }
 
-  sendPost(category, content, subject, mail) {
-    return window.axios.post(`/forum/post/${mail}`, {
+  sendPost(category, content, subject) {
+    return window.axios.post(`/forum/post`, {
       subject: subject,
       content: content,
       category: category
@@ -53,14 +45,13 @@ class Api {
     return window.axios.get('/forum/posts');
   }
 
-  getPostsOfCurrentUser(idUser) {
-    return axios.get(`/forum/posts/${idUser}`);
+  getPostsOfCurrentUser() {
+    return axios.get(`/forum/posts/creator`);
   }
 
-  commentPost(idPost, content, mail, lastName) {
-    return window.axios.put(`/forum/post/${idPost}/comment/${mail}`, {
-      content: content,
-      owner: lastName
+  commentPost(idPost) {
+    return window.axios.put(`/forum/post/${idPost}/comment`, {
+      content: content
     });
   }
 
@@ -77,7 +68,6 @@ class Api {
   }
 
   findPostByCategory(category) {
-    console.log('trying to get the next category :', category);
     return window.axios.get(`forum/posts/category/${category}`);
   }
 
@@ -85,6 +75,19 @@ class Api {
     return window.axios.get('forum/categories');
   }
 
+  updateUser(data) {
+    return window.axios.post(`/user/update`, {
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email
+    });
+  }
+
+  updatePassword(password) {
+    return axios.post(`user/update-password`, {
+      password: password
+    });
+  }
 }
 
 export default new Api();

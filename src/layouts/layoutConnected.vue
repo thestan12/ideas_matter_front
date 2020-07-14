@@ -1,6 +1,6 @@
 <template>
   <q-layout view="lhh LpR lff">
-    <q-header elevated>
+    <q-header elevated class="layout-css">
       <q-toolbar class="q-my-ms">
         <q-btn
           flat
@@ -40,7 +40,7 @@
       v-model="leftDrawerOpen"
       behavior="desktop"
       bordered
-      content-class="bg-grey-2"
+      content-class="drawer-color"
     >
       <q-list>
         <q-item clickable tag="a" target="" @click="goTo('home');clickDrawer();">
@@ -117,6 +117,7 @@ export default {
       this.$router.push("/my-ideas");
     },
     calculateIcon(name) {
+      console.log('name =', name);
       switch (name) {
         case "Technologie":
           return "android";
@@ -148,5 +149,10 @@ export default {
 <style>
 .title {
   cursor: pointer;
+}
+.layout-css {
+  background: #00bf8f;  /* fallback for old browsers */
+  background: -webkit-linear-gradient(to right, #001510, #00bf8f);  /* Chrome 10-25, Safari 5.1-6 */
+  background: linear-gradient(to right, #001510, #00bf8f); /* W3C, IE 10+/ Edge, Firefox 16+, Chrome 26+, Opera 12+, Safari 7+ */
 }
 </style>
