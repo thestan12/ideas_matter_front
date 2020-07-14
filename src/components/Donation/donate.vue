@@ -54,10 +54,10 @@
 <script>
 export default {
   name: 'donation',
-  props:["donationDialog"],
+  props:["donationDialog", "donnationId"],
   data() {
     return {
-      donationInfo: "",
+      amount: 0,
       shape: [ 'line' ],
       one: false,
       ten: true,
@@ -91,6 +91,8 @@ export default {
           },
           onApprove: async (data, actions) => {
             const order = await actions.order.capture();
+            console.log('order =', order);
+            this.amount = order.purchase_units[0].amount.value;
             this.data;
             this.paidFor = true;
             console.log(order);
@@ -102,7 +104,11 @@ export default {
         .render(this.$refs.paypal);
     },
     submitDonation() {
-      this.$emit('submitDonation', this.donationInfo);
+      let data = {
+        amount: this.amount,
+        id: this.donnationId
+      }
+      this.$emit('submitDonation', data);
       this.editorComment = "Type your comment here !";
     },
     AllExlude(value) {

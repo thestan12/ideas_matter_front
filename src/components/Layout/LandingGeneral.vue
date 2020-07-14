@@ -56,9 +56,9 @@
 
               <q-card-actions align="right">
                 <q-chip size="lg" clickable class="q-ma-md" color="secondary" text-color="white" icon="local_atm">
-                  funds collected : 0 $
+                  funds collected : {{getAmountId(idea.id)}} $
                 </q-chip>
-                <q-btn label="Support the idea" color="light-blue" size="md" @click="triggerDonationDialog()"/>
+                <q-btn label="Support the idea" color="light-blue" size="md" @click="triggerDonationDialog(); donnationId = idea.id"/>
                 <q-btn flat round color="grey" icon="thumb_down" @click="dislikePost(idea.id)"/>
                 <q-btn flat round color="grey" icon="thumb_up"  @click="likePost(idea.id)">
                   <q-badge v-if="idea.likesCount === 0" color="blue" floating>{{idea.likesCount}}</q-badge>
@@ -158,7 +158,7 @@
 
     <comments-creator :commentDialog="commentDialog" @submited="submitComment"/>
 
-    <donation :donationDialog="donationDialogC" @submitDonation="submitDonation"/>
+    <donation :donationDialog="donationDialogC" :donnationId="donnationId" @submitDonation="submitDonation"/>
 
     <q-dialog
       v-model="alertLoging"
@@ -249,7 +249,9 @@ export default {
       commentDialog: false,
       comments: [],
       donationDialog: false,
-      stillLooking: true
+      stillLooking: true,
+      donnationId: -1,
+      totalAmount: []
     }
   },
 
@@ -318,8 +320,27 @@ export default {
         });
       }
     },
+    getAmountId(id) {
+      const findPost = this.totalAmount.find(t => t.id === id);
+      if (!findPost) {
+        return 0;
+      }
+      return findPost.amount;
+    },
     submitDonation(payload) {
       // console.log('donation submited successfuly');
+      if (payload && payload.id) {
+          console.log('post donation id =', payload.id);
+          if (!this.totalAmount.find(t => t.id === payload.id)) {
+            this.totalAmount.push({
+              amount: payload.amount,
+              id: payload.id
+            });
+          } else {
+            const modified = this.totalAmount.find(t => t.id === payload.id);
+            modified.amount += payload.amount;
+          }
+      }
       this.donationDialog = false;
     },
     triggerFocus() {
