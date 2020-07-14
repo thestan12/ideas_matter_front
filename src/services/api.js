@@ -49,7 +49,8 @@ class Api {
     return axios.get(`/forum/posts/creator`);
   }
 
-  commentPost(idPost) {
+  commentPost(idPost, content) {
+    console.log("sending comment with post id =", idPost);
     return window.axios.put(`/forum/post/${idPost}/comment`, {
       content: content
     });
