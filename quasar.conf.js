@@ -47,10 +47,10 @@ module.exports = function (ctx) {
       vueRouterMode: 'hash', // available values: 'hash', 'history'
       env: ctx.dev
         ? { // so on dev we'll have
-          API: JSON.stringify('http://newinfratrafficmanager.trafficmanager.net/')
+          API: JSON.stringify('http://jeeinfratrafficmanager.trafficmanager.net/')
         }
         : { // and on build (production):
-          API: JSON.stringify('http://newinfratrafficmanager.trafficmanager.net/')
+          API: JSON.stringify('http://jeeinfratrafficmanager.trafficmanager.net/')
         },
         distDir: ctx.mode.spa ? 'public' : null,
       // rtl: false, // https://quasar.dev/options/rtl-support
