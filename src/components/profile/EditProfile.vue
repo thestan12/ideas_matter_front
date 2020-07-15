@@ -47,13 +47,10 @@
 </template>
 
 <script>
-import { required, sameAs, minLength, maxLength, minValue, integer } from 'vuelidate/lib/validators'
 import Password from 'vue-password-strength-meter'
 import passwords from './password-settings'
 
 import Vue from 'vue'
-import Vuelidate from 'vuelidate'
-Vue.use(Vuelidate)
 
 import api from '../../services/api'
 import StorageService from '../../services/storage-service'
@@ -79,44 +76,6 @@ export default {
         email: StorageService.getUser().email
       }
     }
-  },
-  validations () {
-    const validators = {
-      profileEdit: {
-        nom: {
-          required,
-          minLength: minLength(2),
-          maxLength: maxLength(20)
-        },
-        prenom: {
-          required,
-          minLength: minLength(2),
-          maxLength: maxLength(20)
-        }
-      },
-      password1: {},
-      password2: {},
-      address: {
-        minLength: minLength(5)
-      },
-      phone: {
-        minLength: minLength(8),
-        integer
-      }
-    }
-    if (this.password1 || this.password2) {
-      validators.password1 = {
-        minLength: minLength(this.passwordSettings.minLength),
-        maxLength: maxLength(this.passwordSettings.maxLength)
-      }
-      validators.password2 = {
-        sameAs: sameAs('password1')
-      }
-      validators.passwordScore = {
-        minValue: minValue(2)
-      }
-    }
-    return validators
   },
   computed: {
     passwordSettings () {
@@ -148,31 +107,6 @@ export default {
           })
         })
     },
-    getAlertMessage () {
-      if (!this.$v.profileEdit.nom.required) {
-        return 'First name is required'
-      }
-      if (!this.$v.profileEdit.nom.minLength || !this.$v.profileEdit.nom.maxLength) {
-        return 'Your first name must be between 2 and 20 caractere long'
-      }
-      if (!this.$v.profileEdit.prenom.required) {
-        return 'last name is required'
-      }
-      if (!this.$v.profileEdit.prenom.minLength || !this.$v.profileEdit.prenom.maxLength) {
-        return 'last name must be between 2 and 20 caractere long'
-      }
-      if (!this.$v.password1.minLength || !this.$v.password1.maxLength) {
-        return `your password must be between ${this.passwordSettings.minLength} and
-          ${this.passwordSettings.maxLength} caractere long`
-      }
-      if (!this.$v.password2.sameAs) {
-        return 'Your password don\'t match'
-      }
-      if (!this.$v.passwordScore.minValue) {
-        return 'Please type a more strong password'
-      }
-      return 'No error'
-    },
     prepareDataToSend () {
       let data = {
         idUser: StorageService.getUser().idUser,
@@ -186,17 +120,8 @@ export default {
       return data
     },
     saveChanges () {
-      if (this.$v.$invalid) {
-        this.$q.notify({
-          color: 'red-7',
-          textColor: 'white',
-          icon: 'fas fa-check-circle',
-          message: this.getAlertMessage()
-        })
-      } else {
-        let data = this.prepareDataToSend()
-        this.update(data)
-      }
+      let data = this.prepareDataToSend()
+      this.update(data)
       if (this.password1 === this.password2 && this.password1 !== '') {
         let vm = this;
         api.updatePassword(vm.password1)

@@ -15,6 +15,7 @@
     "@quasar/extras": "^1.0.0",
     "axios": "^0.18.1",
     "express": "^4.17.1",
+    "moment": "^2.25.3",
     "path": "^0.12.7",
     "quasar": "^1.0.0",
     "vue-password-strength-meter": "^1.7.1",

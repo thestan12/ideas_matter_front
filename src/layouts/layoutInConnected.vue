@@ -171,7 +171,7 @@ export default {
     },
     calculateIcon(name) {
       switch (name) {
-        case "Technologie":
+        case "Technology":
           return "android";
           break;
         case "Science":

@@ -119,7 +119,7 @@ export default {
     calculateIcon(name) {
       console.log('name =', name);
       switch (name) {
-        case "Technologie":
+        case "Technology":
           return "android";
           break;
         case "Science":
