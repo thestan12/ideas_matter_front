@@ -44,13 +44,13 @@ module.exports = function (ctx) {
 
     // Full list of options: https://quasar.dev/quasar-cli/quasar-conf-js#Property%3A-build
     build: {
-      vueRouterMode: 'history', // available values: 'hash', 'history'
+      vueRouterMode: 'hash', // available values: 'hash', 'history'
       env: ctx.dev
         ? { // so on dev we'll have
-          API: JSON.stringify('http://localhost:8080')
+          API: JSON.stringify('http://newinfratrafficmanager.trafficmanager.net/')
         }
         : { // and on build (production):
-          API: JSON.stringify('http://localhost:8080')
+          API: JSON.stringify('http://newinfratrafficmanager.trafficmanager.net/')
         },
         distDir: ctx.mode.spa ? 'public' : null,
       // rtl: false, // https://quasar.dev/options/rtl-support
